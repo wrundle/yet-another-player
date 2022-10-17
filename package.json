@@ -5,13 +5,22 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
   },
+  "main": "background.js",
   "dependencies": {
+    "autoprefixer": "^10",
     "core-js": "^3.8.3",
+    "postcss": "^8",
+    "tailwindcss": "^3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "ym-api": "^1.2.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
@@ -22,6 +31,10 @@
     "@vue/test-utils": "^2.0.0-0",
     "@vue/vue3-jest": "^27.0.0-alpha.1",
     "babel-jest": "^27.0.6",
-    "jest": "^27.0.5"
+    "electron": "^13.0.0",
+    "electron-devtools-installer": "^3.1.0",
+    "jest": "^27.0.5",
+    "vue-cli-plugin-electron-builder": "~2.1.1",
+    "vue-cli-plugin-tailwind": "~3.0.0"
   }
 }
