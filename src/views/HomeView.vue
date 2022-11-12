@@ -1,16 +1,12 @@
-<script>
-// @ is an alias to /src
-import Footer from '@/components/Footer.vue'
-
-export default {
-	name: 'HomeView',
-	components: {
-		Footer
-	}
-}
+<script setup>
 </script>
 
 
 <template>
-	<Footer />
+	This is a HomeView!
+	Принимая во внимание, что признание достоинства,
 </template>
+
+
+<style scoped>
+</style>
