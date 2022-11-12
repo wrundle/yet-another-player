@@ -2,9 +2,15 @@
 // @ is an alias to /src
 import BottomBar from '@/components/BottomBar.vue'
 import LeftColumn from '@/components/LeftColumn.vue'
+import Tabs from '@/components/Tabs.vue'
+import Playlist from '@/components/Playlist.vue'
 </script>
 
-<!-- <router-view /> -->
+
+<!-- <button @click="$store.dispatch('addToPlaylist', 'C:/Users/Zanda/Desktop/test2.mp3')">add</button>
+<button @click="$store.dispatch('log')">log</button>
+<button @click="$store.dispatch('playTrack')">play</button> -->
+
 
 <template>
 	<div class="app bg-white dark:bg-stone-900 dark:text-white flex flex-col min-h-screen max-h-screen">
@@ -13,13 +19,18 @@ import LeftColumn from '@/components/LeftColumn.vue'
 
 			<LeftColumn />
 
-			<div class="flex-auto w-3/4">
-				<nav>
-					<router-link to="/">Local</router-link> |
-					<router-link to="/about">Yandex Music</router-link>
-				</nav>
-				<button id="test" />
-				<p>{{ $store.state.firstName }} {{ $store.state.lastName }}</p>
+			<div class="flex-auto w-4/5 flex flex-col">
+
+				<Tabs />
+
+				<div class="flex-auto flex flex-row">
+
+					<router-view />
+
+					<Playlist />
+
+				</div>
+
 			</div>
 
 		</div>
