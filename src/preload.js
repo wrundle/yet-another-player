@@ -1,8 +1,44 @@
-const { YMApi } = require('ym-api');
-const api = new YMApi();
-
 import * as id3 from 'id3js';
 
+const { contextBridge, ipcRenderer } = require('electron');
+const { YMApi } = require('ym-api');
+
+
+window.ipcRenderer = require('electron').ipcRenderer;
+
+
+contextBridge.exposeInMainWorld('versions', {
+	node: () => process.versions.node,
+	chrome: () => process.versions.chrome,
+	electron: () => process.versions.electron,
+	ping: () => ipcRenderer.invoke('ping'),
+	// we can also expose variables, not just functions
+})
+
+
+// Expose protected methods that allow the renderer process to use
+// the ipcRenderer without exposing the entire object
+// contextBridge.exposeInMainWorld(
+// 	"api", {
+// 	send: (channel, data) => {
+// 		// whitelist channels
+// 		let validChannels = ["toMain"];
+// 		if (validChannels.includes(channel)) {
+// 			ipcRenderer.send(channel, data);
+// 		}
+// 	},
+// 	receive: (channel, func) => {
+// 		let validChannels = ["fromMain"];
+// 		if (validChannels.includes(channel)) {
+// 			// Deliberately strip event as it includes `sender`
+// 			ipcRenderer.on(channel, (event, ...args) => func(...args));
+// 		}
+// 	}
+// }
+// );
+
+
+const api = new YMApi();
 
 (async () => {
 	try {

@@ -22,7 +22,7 @@ onMounted(() => {
 			class="flex-initial aspect-square max-w-fill object-cover dark:bg-stone-900"
 		></object>
 
-		<div class="flex-auto text-center p-5 text-xs">
+		<div class="flex-auto p-5 text-xs">
 			lyrics
 		</div>
 

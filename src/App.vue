@@ -4,6 +4,18 @@ import BottomBar from '@/components/BottomBar.vue'
 import LeftColumn from '@/components/LeftColumn.vue'
 import Tabs from '@/components/Tabs.vue'
 import Playlist from '@/components/Playlist.vue'
+
+// const { ipcRenderer } = window
+// console.log(ipcRenderer);
+// window.ipcRenderer.send('toMain', 1)
+
+const func = async () => {
+	const response1 = await window.versions.ping()
+	const response2 = await window.versions.electron()
+	console.log(response1) // prints out 'pong'
+	console.log(response2)
+}
+func()
 </script>
 
 
