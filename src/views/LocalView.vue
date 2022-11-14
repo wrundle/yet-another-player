@@ -1,11 +1,18 @@
 <script setup>
+var pickFolder = (event) => {if (event) {window.folderHandling.selectFolder()}};
 </script>
 
 
 <template>
 	<div class="flex-auto w-3/4">
-		<h1>This is a LocalView!</h1>
-		Принимая во внимание, что признание достоинства,
+
+		<button
+			@click="pickFolder"
+			class="p-3 text-sm dark:text-stone-300 italic dark:hover:text-white"
+		>
+			+ добавить директорию...
+		</button>
+
 	</div>
 </template>
 

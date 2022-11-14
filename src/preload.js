@@ -1,41 +1,108 @@
 import * as id3 from 'id3js';
 
+const path = require('path');
 const { contextBridge, ipcRenderer } = require('electron');
+const jsonfile = require('jsonfile');
 const { YMApi } = require('ym-api');
 
 
-window.ipcRenderer = require('electron').ipcRenderer;
+let Song = class {
+	constructor(
+		artist,
+		album,
+		title,
+		number,
+		year,
+		duration,
+		cover,
+		path
+	) {
+		this.artist = artist;
+		this.album = album;
+		this.title = title;
+		this.number = number;
+		this.year = year;
+		this.duration = duration;
+		this.cover = cover;
+		this.path = path;
+	};
+};
 
 
-contextBridge.exposeInMainWorld('versions', {
-	node: () => process.versions.node,
-	chrome: () => process.versions.chrome,
-	electron: () => process.versions.electron,
-	ping: () => ipcRenderer.invoke('ping'),
-	// we can also expose variables, not just functions
-})
+// const obj = {
+// 	name: 'one',
+// 	surname: 'тык'
+// };
+// jsonfile.writeFile(settingsFile, obj, { spaces: 4 }, function (err) {
+// 	if (err) console.error(err)
+// })
+// jsonfile.readFile(settingsFile, function (err, obj) {
+// 	if (err) console.error(err)
+// 	console.dir(obj)
+// })
 
 
-// Expose protected methods that allow the renderer process to use
-// the ipcRenderer without exposing the entire object
-// contextBridge.exposeInMainWorld(
-// 	"api", {
-// 	send: (channel, data) => {
-// 		// whitelist channels
-// 		let validChannels = ["toMain"];
-// 		if (validChannels.includes(channel)) {
-// 			ipcRenderer.send(channel, data);
+// function readFiles(dirname, onFileContent, onError) {
+// 	fs.readdir(dirname, function (err, filenames) {
+// 		if (err) {
+// 			onError(err)
+// 			return
 // 		}
-// 	},
-// 	receive: (channel, func) => {
-// 		let validChannels = ["fromMain"];
-// 		if (validChannels.includes(channel)) {
-// 			// Deliberately strip event as it includes `sender`
-// 			ipcRenderer.on(channel, (event, ...args) => func(...args));
-// 		}
-// 	}
+// 		filenames.forEach(function (filename) {
+// 			fs.readFile(dirname + filename, 'utf-8', function (err, content) {
+// 				if (err) {
+// 					onError(err)
+// 					return
+// 				}
+// 				onFileContent(filename, content)
+// 			})
+// 		})
+// 	})
 // }
-// );
+
+// readFiles(result.filePaths[0] + '\\', (content) => {
+// 	win.webContents.send('sendFolder', content);
+// }, (err) => {throw err})
+
+
+// id3.fromPath('C:/Users/Zanda/Desktop/test2.mp3').then((tags) => {
+// 	console.log(tags);
+// 	console.log(tags.artist);
+// 	console.log(tags.album);
+// 	console.log(tags.title);
+// 	console.log(tags.year);
+// 	console.log(tags.images.data);
+// });
+
+
+contextBridge.exposeInMainWorld('windowControls', {
+	minimize: () => ipcRenderer.invoke('minimize'),
+
+	maximize: () => ipcRenderer.invoke('maximize'),
+
+	close: () => ipcRenderer.invoke('close')
+});
+
+
+contextBridge.exposeInMainWorld('folderHandling', {
+	selectFolder: () => {
+		ipcRenderer.invoke('selectFolder');
+		ipcRenderer.invoke('getExecutablePath')
+			.then(result => {
+				const pathToSettings = path.dirname(result) + '\\settings.json';
+				console.log(pathToSettings);
+			});
+	},
+
+	addFolderToSettings: (message) => {
+		ipcRenderer.on('addFolderToSettings', message);
+	}
+});
+
+
+ipcRenderer.on('addFolderToSettings', (e, args) => {
+	console.log(args);
+});
 
 
 const api = new YMApi();
@@ -46,9 +113,9 @@ const api = new YMApi();
 		// const result = await api.searchArtists("gorillaz");
 
 
-		const result = await api.searchTracks("дао");
-		const tracks = result.tracks.results;
-		console.log(tracks);
+		// const result = await api.searchTracks("дао");
+		// const tracks = result.tracks.results;
+		// console.log(tracks);
 
 
 		// const getTrackDownloadInfoResult = await api.getTrackDownloadInfo("86505477");
@@ -64,17 +131,7 @@ const api = new YMApi();
 		// 	hqMp3Track.downloadInfoUrl
 		// );
 		// console.log({ getTrackDirectLinkResult });
-		id3.fromPath('C:/Users/Zanda/Desktop/test2.mp3').then((tags) => {
-			console.log(tags);
-			console.log(tags.artist);
-			console.log(tags.album);
-			console.log(tags.title);
-			console.log(tags.year);
-		});
 	} catch (e) {
 		console.log(`api error ${e.message}`);
 	}
 })();
-
-// console.log('smth');
-// alert("It Worked!") // Remove this line once you confirm it worked

@@ -2,6 +2,17 @@ import { createStore } from 'vuex';
 import { Howl, Howler } from 'howler';
 
 
+window.folderHandling.addFolderToSettings((event, message) => {
+	console.log(message);
+
+	// var audioSrc = 'data:audio/mp3;base64,' + message;
+	// var audio = new Audio();
+	// audio.src = audioSrc;
+	// audio.load();
+	// audio.play();
+});
+
+
 export default createStore({
 
 	state: {

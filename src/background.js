@@ -1,14 +1,16 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+
+import { app, protocol, BrowserWindow, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 // import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
-const ipcMain = require('electron').ipcMain;
+const ipcMain = require('electron').ipcMain
+const path = require('path')
+var fs = require('fs')
 
-const path = require('path');
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -23,19 +25,41 @@ async function createWindow() {
 		height: 900,
 		frame: false,
 		webPreferences: {
-
 			// Use pluginOptions.nodeIntegration, leave this alone
 			// See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
 			nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
 			contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-			enableRemoteModule: true,
 			preload: path.join(__dirname, 'preload.js'),
 			webSecurity: false,
 			devTools: true
 		}
 	})
 
-	ipcMain.handle('ping', () => 'pong')
+
+	ipcMain.handle('minimize', () => win.minimize())
+
+	ipcMain.handle('maximize', () => win.isMaximized() ? win.unmaximize() : win.maximize())
+
+	ipcMain.handle('close', () => {
+		win.webContents.closeDevTools()
+		win.close()
+	})
+
+	ipcMain.handle('getExecutablePath', async (event) => app.getPath('exe'))
+
+	ipcMain.handle('selectFolder', async (event) => {
+		dialog.showOpenDialog(win, {
+			filters: [
+				{ name: 'All Files', extensions: ['*'] }
+			],
+			properties: ['openDirectory']
+		}).then(result => {
+			win.webContents.send('addFolderToSettings', result.filePaths[0]);
+		}).catch(err => {
+			throw err
+		})
+	})
+
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {
 		// Load the url of the dev server if in development mode
@@ -47,6 +71,7 @@ async function createWindow() {
 		win.loadURL('app://./index.html')
 	}
 
+
 	// Emitted when the window is closed.
 	win.on('closed', function () {
 		// Dereference the window object, usually you would store windows
@@ -55,7 +80,7 @@ async function createWindow() {
 		win = null
 	})
 
-	win.webContents.openDevTools();	// REMOVE THIS
+	isDevelopment && !process.env.IS_TEST ? win.webContents.openDevTools() : {}
 }
 
 
@@ -67,6 +92,7 @@ app.on('window-all-closed', () => {
 		app.quit()
 	}
 })
+
 
 app.on('activate', () => {
 	// On macOS it's common to re-create a window in the app when the
@@ -87,7 +113,7 @@ app.on('ready', async () => {
 		//   console.error('Vue Devtools failed to install:', e.toString())
 		// }
 	}
-	createWindow();
+	createWindow()
 })
 
 
