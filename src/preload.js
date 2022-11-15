@@ -1,107 +1,84 @@
 import * as id3 from 'id3js';
 
-const path = require('path');
 const { contextBridge, ipcRenderer } = require('electron');
 const jsonfile = require('jsonfile');
 const { YMApi } = require('ym-api');
+const path = require('path');
+const fs = require('fs')
 
 
-let Song = class {
-	constructor(
-		artist,
-		album,
-		title,
-		number,
-		year,
-		duration,
-		cover,
-		path
-	) {
-		this.artist = artist;
-		this.album = album;
-		this.title = title;
-		this.number = number;
-		this.year = year;
-		this.duration = duration;
-		this.cover = cover;
-		this.path = path;
+const defaultSettings = {allowedFolders: []};
+
+const getPathToSettings = async () => {
+	const pathToExecutable = await ipcRenderer.invoke('getPathToExecutable');
+	const pathToSettings = path.dirname(pathToExecutable) + '\\settings.json';
+	const doSettingsExist = await fs.promises.stat(pathToSettings).then(() => true, () => false);
+	if (!doSettingsExist) {
+		jsonfile.writeFileSync(pathToSettings, defaultSettings);
 	};
+	return pathToSettings;
 };
 
 
-// const obj = {
-// 	name: 'one',
-// 	surname: 'тык'
-// };
-// jsonfile.writeFile(settingsFile, obj, { spaces: 4 }, function (err) {
-// 	if (err) console.error(err)
-// })
-// jsonfile.readFile(settingsFile, function (err, obj) {
-// 	if (err) console.error(err)
-// 	console.dir(obj)
-// })
+contextBridge.exposeInMainWorld('folderHandling', {
 
+	addFolder: async () => {
+		const res = await ipcRenderer.invoke('selectFolder');
+		if (res.canceled) {
+			return;
+		};
+		const pathToFolder = res.filePaths[0] + '\\';
+		const pathToSettings = await getPathToSettings();
+		var settings = jsonfile.readFileSync(pathToSettings);
+		if (!settings.allowedFolders.includes(pathToFolder)) {
+			settings.allowedFolders.push(pathToFolder);
+			jsonfile.writeFileSync(pathToSettings, settings);
+		};
+	},
 
-// function readFiles(dirname, onFileContent, onError) {
-// 	fs.readdir(dirname, function (err, filenames) {
-// 		if (err) {
-// 			onError(err)
-// 			return
-// 		}
-// 		filenames.forEach(function (filename) {
-// 			fs.readFile(dirname + filename, 'utf-8', function (err, content) {
-// 				if (err) {
-// 					onError(err)
-// 					return
-// 				}
-// 				onFileContent(filename, content)
-// 			})
-// 		})
-// 	})
-// }
+	readFolders: new Promise(async (resolve, reject) => {
+		const pathToSettings = await getPathToSettings();
+		const settings = jsonfile.readFileSync(pathToSettings);
+		var files = [];
+		settings.allowedFolders.forEach(pathToFolder => {
+			fs.readdirSync(pathToFolder).forEach(filename => {
+				const pathToFile = pathToFolder + filename;
+				if (path.extname(pathToFile) == ".mp3") {
+					files.push(pathToFile);
+				}
+			});
+		});
+		var songs = [];
+		for (const pathToFile of files) {
+			const base64File = new Buffer(pathToFile, 'binary').toString('base64');
+			const tags = await id3.fromPath(pathToFile);
+			const song = {
+				artist: tags.artist,
+				album: tags.album,
+				title: tags.title,
+				track: tags.track,
+				year: tags.year,
+				images: tags.images,
+				path: pathToFile,
+				base64: base64File
+			};
+			songs.push(song);
+		};
+		resolve(songs);
+	})
 
-// readFiles(result.filePaths[0] + '\\', (content) => {
-// 	win.webContents.send('sendFolder', content);
-// }, (err) => {throw err})
-
-
-// id3.fromPath('C:/Users/Zanda/Desktop/test2.mp3').then((tags) => {
-// 	console.log(tags);
-// 	console.log(tags.artist);
-// 	console.log(tags.album);
-// 	console.log(tags.title);
-// 	console.log(tags.year);
-// 	console.log(tags.images.data);
-// });
+});
 
 
 contextBridge.exposeInMainWorld('windowControls', {
 	minimize: () => ipcRenderer.invoke('minimize'),
-
 	maximize: () => ipcRenderer.invoke('maximize'),
-
 	close: () => ipcRenderer.invoke('close')
 });
 
 
-contextBridge.exposeInMainWorld('folderHandling', {
-	selectFolder: () => {
-		ipcRenderer.invoke('selectFolder');
-		ipcRenderer.invoke('getExecutablePath')
-			.then(result => {
-				const pathToSettings = path.dirname(result) + '\\settings.json';
-				console.log(pathToSettings);
-			});
-	},
-
-	addFolderToSettings: (message) => {
-		ipcRenderer.on('addFolderToSettings', message);
-	}
-});
-
-
-ipcRenderer.on('addFolderToSettings', (e, args) => {
-	console.log(args);
+ipcRenderer.on('addFolderToSettings', (e, message) => {
+	// console.log(message);
 });
 
 

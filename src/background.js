@@ -37,28 +37,11 @@ async function createWindow() {
 
 
 	ipcMain.handle('minimize', () => win.minimize())
-
 	ipcMain.handle('maximize', () => win.isMaximized() ? win.unmaximize() : win.maximize())
+	ipcMain.handle('close', () => {win.webContents.closeDevTools(); win.close()})
 
-	ipcMain.handle('close', () => {
-		win.webContents.closeDevTools()
-		win.close()
-	})
-
-	ipcMain.handle('getExecutablePath', async (event) => app.getPath('exe'))
-
-	ipcMain.handle('selectFolder', async (event) => {
-		dialog.showOpenDialog(win, {
-			filters: [
-				{ name: 'All Files', extensions: ['*'] }
-			],
-			properties: ['openDirectory']
-		}).then(result => {
-			win.webContents.send('addFolderToSettings', result.filePaths[0]);
-		}).catch(err => {
-			throw err
-		})
-	})
+	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'))
+	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory']}))
 
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {

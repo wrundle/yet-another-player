@@ -1,16 +1,13 @@
 <script setup>
+import { useStore } from 'vuex';
 // @ is an alias to /src
-import BottomBar from '@/components/BottomBar.vue'
-import LeftColumn from '@/components/LeftColumn.vue'
-import Tabs from '@/components/Tabs.vue'
-import Playlist from '@/components/Playlist.vue'
+import LeftColumn from '@/components/LeftColumn.vue';
+import BottomBar from '@/components/BottomBar.vue';
+import Playlist from '@/components/Playlist.vue';
+import Tabs from '@/components/Tabs.vue';
 
-
-// const func = async () => {
-// 	const response2 = await window.versions.electron()
-// 	console.log(response2)
-// }
-// func()
+const store = useStore();
+store.dispatch('updateMusicLibrary')
 </script>
 
 
@@ -20,6 +17,7 @@ import Playlist from '@/components/Playlist.vue'
 
 
 <template>
+
 	<div class="app bg-white dark:bg-stone-900 dark:text-white flex flex-col min-h-screen max-h-screen">
 
 		<div class="flex-grow flex flex-row">
@@ -43,7 +41,9 @@ import Playlist from '@/components/Playlist.vue'
 		</div>
 
 		<BottomBar />
+
 	</div>
+
 </template>
 
 

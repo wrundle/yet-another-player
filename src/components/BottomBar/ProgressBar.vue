@@ -1,5 +1,4 @@
 <script setup>
-import { arrowFunctionExpression } from '@babel/types';
 import { onMounted } from 'vue'
 
 // FOR TESTING PURPOSES ONLY

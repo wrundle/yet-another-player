@@ -1,21 +1,22 @@
-import { createStore } from 'vuex';
 import { Howl, Howler } from 'howler';
+import { createStore } from 'vuex';
 
 
-window.folderHandling.addFolderToSettings((event, message) => {
-	console.log(message);
+// window.folderHandling.addFolderToSettings((event, message) => {
+	// console.log(message);
 
 	// var audioSrc = 'data:audio/mp3;base64,' + message;
 	// var audio = new Audio();
 	// audio.src = audioSrc;
 	// audio.load();
 	// audio.play();
-});
+// });
 
 
 export default createStore({
 
 	state: {
+		musicLibrary: [],
 		playlist: []
 	},
 
@@ -25,15 +26,19 @@ export default createStore({
 
 	mutations: {
 		UPDATE_PLAYLIST(state, payload) {
-			state.playlist = payload
+			state.playlist = payload;
+		},
+
+		UPDATE_MUSIC_LIBRARY(state, payload) {
+			state.musicLibrary = payload;
 		}
 	},
 
 	actions: {
 		addToPlaylist(context, payload) {
-			const playlist = context.state.playlist
-			playlist.push(payload)
-			context.commit('UPDATE_PLAYLIST', playlist)
+			const playlist = context.state.playlist;
+			playlist.push(payload);
+			context.commit('UPDATE_PLAYLIST', playlist);
 		},
 
 		playTrack(context) {
@@ -46,6 +51,12 @@ export default createStore({
 
 		log(context) {
 			console.log(context.state.playlist);
+		},
+
+		async updateMusicLibrary(context) {
+			const result = await window.folderHandling.readFolders;
+			console.log(result[0].artist);
+			// context.commit('UPDATE_MUSIC_LIBRARY', musicLibrary);
 		}
 	},
 
@@ -53,4 +64,4 @@ export default createStore({
 
 	}
 
-})
+});

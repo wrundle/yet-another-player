@@ -1,9 +1,12 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 
-var minimize = (event) => {if (event) {window.windowControls.minimize()}};
-var maximize = (event) => {if (event) {window.windowControls.maximize()}};
-var close = (event) => {if (event) {window.windowControls.close()}};
+const LocalViewClick = (event) => {};
+const YandexMusicViewClick = (event) => {};
+
+const minimize = (event) => {if (event) {window.windowControls.minimize()}};
+const maximize = (event) => {if (event) {window.windowControls.maximize()}};
+const close = (event) => {if (event) {window.windowControls.close()}};
 </script>
 
 
@@ -12,7 +15,12 @@ var close = (event) => {if (event) {window.windowControls.close()}};
 
 		<span class="flex text-sm text-center dark:text-stone-300">
 
-			<router-link to="/" class="non-draggable">
+			<router-link
+				to="/"
+				id="LocalViewLink"
+				@click="LocalViewClick"
+				class="non-draggable"
+			>
 				<span class="flex pt-4 pb-3 pr-4 dark:hover:text-white dark:hover:bg-stone-800">
 					<Icon
 						class="mx-2 text-stone-300 text-xl"
@@ -23,7 +31,12 @@ var close = (event) => {if (event) {window.windowControls.close()}};
 				</span>
 			</router-link>
 
-			<router-link to="/ym" class="non-draggable">
+			<router-link
+				to="/ym"
+				id="YandexMusicView"
+				@click="YandexMusicViewClick"
+				class="non-draggable"
+			>
 				<span class="flex pt-4 pb-3 pr-4 dark:hover:text-white dark:hover:bg-stone-800">
 					<Icon
 						class="mx-2 text-stone-300 text-xl"

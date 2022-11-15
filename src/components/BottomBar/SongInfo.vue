@@ -7,6 +7,7 @@
 
 	<button
 		class="
+			-mb-3
 			flex-auto
 			hover:underline
 			text-sm
