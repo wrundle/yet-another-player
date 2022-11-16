@@ -14,7 +14,7 @@ onMounted(() => {
 
 
 <template>
-	<div id="left-column" class="flex-auto flex flex-col w-1/5 dark:bg-black border-r dark:border-r-stone-600">
+	<div id="left-column" class="flex-auto flex flex-col w-1/5 dark:bg-black border-r dark:border-r-stone-800">
 
 		<object
 			type="image/jpeg"

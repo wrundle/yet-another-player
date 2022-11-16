@@ -11,7 +11,7 @@ const close = (event) => {if (event) {window.windowControls.close()}};
 
 
 <template>
-	<div class="draggable flex-initial border-b dark:border-stone-600 flex flex-row justify-between">
+	<div class="draggable flex-initial border-b dark:border-stone-700 flex flex-row justify-between">
 
 		<span class="flex text-sm text-center dark:text-stone-300">
 

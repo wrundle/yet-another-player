@@ -5,11 +5,11 @@
 <template>
 	<div
 		class="
-			flex-auto w-1/4 border-l dark:border-l-stone-600
+			flex-auto w-1/4 border-l dark:border-l-stone-800
 			bg-gradient-to-t from-black
 		"
 	>
-		test
+		<span class="dark:text-stone-500 italic text-sm">Тут могла быть ваша реклама...</span>
 	</div>
 </template>
 

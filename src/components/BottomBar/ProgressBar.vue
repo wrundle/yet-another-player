@@ -58,17 +58,11 @@ onMounted(() => {
 <style scoped>
 #progress-bar {
 	appearance: none;
-	/* background: linear-gradient(to right, #82CFD0 0%, #82CFD0 50%, #fff 50%, #fff 100%); */
 	border-radius: 8px;
 	outline: none;
 	transition: background 450ms ease-in;
-
 	--thumb-visibility: hidden;
 }
-
-/* #progress-bar::-webkit-slider-runnable-track {
-
-} */
 
 #progress-bar::-webkit-slider-thumb {
 	/* Fallback */
@@ -77,10 +71,9 @@ onMounted(() => {
 	visibility: var(--thumb-visibility);
 
 	appearance: none;
-	/* border: solid; */
 	border-radius: 10px;
-	height: 10px;
-	width: 10px;
+	height: 11px;
+	width: 11px;
 	background: #FFF;
 }
 </style>

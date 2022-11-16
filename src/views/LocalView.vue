@@ -7,7 +7,7 @@ var pickFolder = (event) => {if (event) {window.folderHandling.addFolder()}};
 
 
 <template>
-	<div class="flex-auto w-3/4 flex flex-col">
+	<div class="local-view flex-auto w-3/4 flex flex-col max-h-full overflow-auto">
 
 		<div class="flex flex-row justify-between">
 
@@ -45,4 +45,15 @@ var pickFolder = (event) => {if (event) {window.folderHandling.addFolder()}};
 
 
 <style scoped>
+.local-view::-webkit-scrollbar {
+    width: 13px;
+}
+
+.local-view::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.local-view::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
 </style>

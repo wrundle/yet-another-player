@@ -53,14 +53,15 @@ contextBridge.exposeInMainWorld('folderHandling', {
 			const base64File = new Buffer(pathToFile, 'binary').toString('base64');
 			const tags = await id3.fromPath(pathToFile);
 			const song = {
-				artist: tags.artist,
 				album: tags.album,
-				title: tags.title,
-				track: tags.track,
-				year: tags.year,
+				artist: tags.artist,
+				base64: base64File,
+				duration: 0,
 				images: tags.images,
 				path: pathToFile,
-				base64: base64File
+				title: tags.title,
+				track: tags.track,
+				year: tags.year
 			};
 			songs.push(song);
 		};

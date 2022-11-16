@@ -18,17 +18,22 @@ store.dispatch('updateMusicLibrary')
 
 <template>
 
-	<div class="app bg-white dark:bg-stone-900 dark:text-white flex flex-col min-h-screen max-h-screen">
+	<div
+		class="
+			app
+			flex flex-col min-h-screen max-h-screen overflow-hidden
+			bg-white dark:bg-stone-900 dark:text-white"
+	>
 
-		<div class="flex-grow flex flex-row">
+		<div class="flex-grow flex flex-row max-h-full overflow-hidden">
 
 			<LeftColumn />
 
-			<div class="flex-auto w-4/5 flex flex-col">
+			<div class="flex-auto w-4/5 flex flex-col max-h-full overflow-hidden">
 
 				<Tabs />
 
-				<div class="flex-auto flex flex-row">
+				<div class="flex-auto flex flex-row max-h-full overflow-hidden">
 
 					<router-view />
 

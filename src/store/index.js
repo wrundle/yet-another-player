@@ -17,6 +17,7 @@ export default createStore({
 
 	state: {
 		musicLibrary: [],
+		currentSong: {},
 		playlist: []
 	},
 
@@ -55,8 +56,8 @@ export default createStore({
 
 		async updateMusicLibrary(context) {
 			const result = await window.folderHandling.readFolders;
-			console.log(result[0].artist);
-			// context.commit('UPDATE_MUSIC_LIBRARY', musicLibrary);
+			console.log(result);
+			context.commit('UPDATE_MUSIC_LIBRARY', result);
 		}
 	},
 
