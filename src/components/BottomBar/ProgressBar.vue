@@ -41,8 +41,9 @@ onMounted(() => {
 
 		<div class="flex-auto w-full mx-2">
 			<input
+				id="progress-bar"
 				type="range" min="0" max="100" value="0" step="1"
-				id="progress-bar" name="progress-bar"
+				name="progress-bar"
 				class="p-0 h-[3px] w-full"
 			/>
 		</div>

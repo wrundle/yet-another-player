@@ -1,13 +1,30 @@
 <script setup>
-import { Icon } from "@iconify/vue";
 import Album from '@/components/Album.vue';
+import { Icon } from "@iconify/vue";
+
 
 var pickFolder = (event) => {if (event) {window.folderHandling.addFolder()}};
+
+var localLibrary;
+const updateLocalLibrary = async () => {localLibrary = await window.folderHandling.readFolders};
+await updateLocalLibrary();
+
+window.folderHandling.updateLocalLibrary(async (event, data) => {
+	await updateLocalLibrary();
+});
+
+const songsByAlbum = localLibrary.reduce((acc, song) => {
+	const { album } = song;
+	acc[album] = acc[album] ?? [];
+	acc[album].push(song);
+	return acc;
+}, {});
+const albums = Object.keys(songsByAlbum).sort();
 </script>
 
 
 <template>
-	<div class="local-view flex-auto w-3/4 flex flex-col max-h-full overflow-auto">
+	<div class="local-view flex-auto w-4/5 flex flex-col max-h-full overflow-auto">
 
 		<div class="flex flex-row justify-between">
 
@@ -35,9 +52,9 @@ var pickFolder = (event) => {if (event) {window.folderHandling.addFolder()}};
 		</div>
 
 		<div class="flex-auto">
-			<Album />
-			<Album />
-			<Album />
+			<div v-for="(album, index) in albums">
+				<Album :songs="songsByAlbum[albums[index]]" :idx="index" />
+			</div>
 		</div>
 
 	</div>

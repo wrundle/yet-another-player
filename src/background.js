@@ -1,7 +1,7 @@
 'use strict'
 
 
-import { app, protocol, BrowserWindow, dialog } from 'electron'
+import { app, protocol, BrowserWindow, dialog, ipcRenderer } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 // import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
@@ -42,6 +42,8 @@ async function createWindow() {
 
 	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'))
 	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory']}))
+
+	ipcMain.handle('updateLocalLibrary', async () => win.webContents.send('updateLocalLibrary', null))
 
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {

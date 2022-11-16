@@ -4,7 +4,18 @@ const { contextBridge, ipcRenderer } = require('electron');
 const jsonfile = require('jsonfile');
 const { YMApi } = require('ym-api');
 const path = require('path');
-const fs = require('fs')
+const fs = require('fs');
+
+
+const normalizeString = (str) => {
+	var result = '';
+	for (const iterator of str) {
+		if (iterator.charCodeAt() !== 0) {
+			result += iterator;
+		};
+	};
+	return result;
+};
 
 
 const defaultSettings = {allowedFolders: []};
@@ -34,6 +45,7 @@ contextBridge.exposeInMainWorld('folderHandling', {
 			settings.allowedFolders.push(pathToFolder);
 			jsonfile.writeFileSync(pathToSettings, settings);
 		};
+		ipcRenderer.invoke('updateLocalLibrary');
 	},
 
 	readFolders: new Promise(async (resolve, reject) => {
@@ -53,20 +65,24 @@ contextBridge.exposeInMainWorld('folderHandling', {
 			const base64File = new Buffer(pathToFile, 'binary').toString('base64');
 			const tags = await id3.fromPath(pathToFile);
 			const song = {
-				album: tags.album,
-				artist: tags.artist,
-				base64: base64File,
-				duration: 0,
-				images: tags.images,
-				path: pathToFile,
-				title: tags.title,
-				track: tags.track,
-				year: tags.year
+				album: normalizeString(tags.album) || "",
+				artist: normalizeString(tags.artist) || "",
+				base64: normalizeString(base64File) || "",
+				duration: 0 || 0,
+				images: tags.images || [],
+				path: normalizeString(pathToFile) || "",
+				title: normalizeString(tags.title) || "",
+				track: normalizeString(tags.track) || "",
+				year: normalizeString(tags.year) || ""
 			};
 			songs.push(song);
 		};
 		resolve(songs);
-	})
+	}),
+
+	updateLocalLibrary: (message) => {
+		ipcRenderer.on('updateLocalLibrary', message)
+	}
 
 });
 

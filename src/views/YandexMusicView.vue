@@ -3,7 +3,7 @@
 
 
 <template>
-	<div class="flex-auto w-3/4">
+	<div class="flex-auto w-4/5">
 		<h1>This is YandexMusicView</h1>
 	</div>
 </template>

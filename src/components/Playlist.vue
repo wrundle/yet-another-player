@@ -5,7 +5,7 @@
 <template>
 	<div
 		class="
-			flex-auto w-1/4 border-l dark:border-l-stone-800
+			flex-auto w-1/5 border-l dark:border-l-stone-800
 			bg-gradient-to-t from-black
 		"
 	>

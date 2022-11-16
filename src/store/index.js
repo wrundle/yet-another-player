@@ -2,21 +2,20 @@ import { Howl, Howler } from 'howler';
 import { createStore } from 'vuex';
 
 
-// window.folderHandling.addFolderToSettings((event, message) => {
-	// console.log(message);
+// window.folderHandling.msgLibraryUpdated((event, args) => {
+// 	console.log(args);
 
-	// var audioSrc = 'data:audio/mp3;base64,' + message;
-	// var audio = new Audio();
-	// audio.src = audioSrc;
-	// audio.load();
-	// audio.play();
+// 	var audioSrc = 'data:audio/mp3;base64,' + message;
+// 	var audio = new Audio();
+// 	audio.src = audioSrc;
+// 	audio.load();
+// 	audio.play();
 // });
 
 
 export default createStore({
 
 	state: {
-		musicLibrary: [],
 		currentSong: {},
 		playlist: []
 	},
@@ -52,12 +51,6 @@ export default createStore({
 
 		log(context) {
 			console.log(context.state.playlist);
-		},
-
-		async updateMusicLibrary(context) {
-			const result = await window.folderHandling.readFolders;
-			console.log(result);
-			context.commit('UPDATE_MUSIC_LIBRARY', result);
 		}
 	},
 

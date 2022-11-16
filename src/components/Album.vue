@@ -1,6 +1,28 @@
 <script setup>
 import { Icon } from "@iconify/vue";
-import Song from './Song.vue'
+import { onMounted } from 'vue';
+import Song from './Song.vue';
+
+
+const props = defineProps({
+	songs: Array,
+	idx: Number
+})
+
+onMounted(() => {
+	if (props.songs[0].images == []) return;
+	var arrayBuffer = props.songs[0].images[0].data;
+	var image = document.getElementById(props.songs[0].album + props.idx);
+
+	var bytes = new Uint8Array(arrayBuffer);
+	var blob = new Blob([bytes.buffer]);
+
+	var reader = new FileReader();
+	reader.onload = function (e) {
+		image.src = e.target.result;
+	};
+	reader.readAsDataURL(blob);
+});
 </script>
 
 
@@ -16,21 +38,50 @@ import Song from './Song.vue'
 
 		<div class="flex-auto flex pb-5 pt-10">
 
-			<object
-				type="image/jpeg"
-				data="C:/Users/Zanda/Desktop/test2.jpg"
-				class="flex-initial mr-5 aspect-square w-36 object-scale-down dark:bg-stone-900"
-			></object>
+			<img
+				:id="props.songs[0].album + props.idx"
+				class="flex-initial mr-5 aspect-square w-36 object-fill"
+				:src="require('@/assets/placeholder.jpg')"
+			/>
 
-			<div class="flex-auto py-2">
-				<div class="text-2xl text-white font-extrabold mb-3">Our Walls</div>
-				<div class="text-sm dark:text-stone-300">
-					<span>EP</span>
+			<div class="flex-auto flex flex-col py-2">
+
+				<div class="flex-initial text-2xl text-white font-extrabold mb-3">{{ props.songs[0].album }}</div>
+
+				<div class="flex-initial text-sm dark:text-stone-300">
+
+					<span>Album</span>
 					<Icon class="inline mx-1" icon="bi:dot" />
-					<span>2019</span>
+					<span>{{ props.songs[0].year }}</span>
 					<Icon class="inline mx-1" icon="bi:dot" />
-					<span>5 songs</span>
+					<span>{{ props.songs.length }} {{ props.songs.length > 1 ? "songs" : "song"}}</span>
+
 				</div>
+
+				<div class="flex-grow"></div>
+
+				<div class="flex-initial flex place-items-center">
+
+					<Icon
+						class="mr-5 text-3xl hover:scale-110"
+						icon="bi:play-circle-fill"
+						:inline="true"
+					/>
+
+					<Icon
+						class="mr-4 text-stone-300 hover:text-white"
+						icon="bi:suit-heart"
+						:inline="true"
+					/>
+
+					<Icon
+						class="mr-4 text-stone-300 hover:text-white"
+						icon="bi:three-dots"
+						:inline="true"
+					/>
+
+				</div>
+
 			</div>
 
 		</div>
@@ -44,7 +95,7 @@ import Song from './Song.vue'
 			"
 		>
 
-			<span class="mr-4 flex-initial flex place-items-center text-lg">
+			<span class="w-6 mr-4 flex-initial flex place-items-center text-lg justify-end">
 				#
 			</span>
 
@@ -54,7 +105,7 @@ import Song from './Song.vue'
 
 			<object
 				type="image/jpeg"
-				class="flex-initial mr-5 w-12 aspect-square object-scale-down invisible"
+				class="flex-initial mr-10 w-12 aspect-square object-scale-down invisible"
 			></object>
 
 			<span class="mr-4 w-1/2 flex-initial flex place-items-center text-sm">
@@ -76,9 +127,9 @@ import Song from './Song.vue'
 		</div>
 
 		<div class="flex-auto flex flex-col">
-			<Song />
-			<Song />
-			<Song />
+			<div v-for="song in props.songs">
+				<Song v-bind="song" />
+			</div>
 		</div>
 
 	</div>
