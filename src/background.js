@@ -41,7 +41,7 @@ async function createWindow() {
 	ipcMain.handle('close', () => {win.webContents.closeDevTools(); win.close()})
 
 	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'))
-	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory']}))
+	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory', 'multiSelections']}))
 
 	ipcMain.handle('updateLocalLibrary', async () => win.webContents.send('updateLocalLibrary', null))
 

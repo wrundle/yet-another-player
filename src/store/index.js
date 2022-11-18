@@ -1,5 +1,6 @@
 import { Howl, Howler } from 'howler';
 import { createStore } from 'vuex';
+import { reactive } from 'vue'
 
 
 // window.folderHandling.msgLibraryUpdated((event, args) => {
@@ -13,10 +14,11 @@ import { createStore } from 'vuex';
 // });
 
 
-export default createStore({
+export default reactive(createStore({
 
 	state: {
-		currentSong: {},
+		currentSong: new Object,
+		howlInstance: new Object,
 		playlist: []
 	},
 
@@ -25,6 +27,14 @@ export default createStore({
 	},
 
 	mutations: {
+		UPDATE_CURRENT_SONG(state, payload) {
+			state.currentSong = payload;
+		},
+
+		UPDATE_HOWL_INSTANCE(state, payload) {
+			state.howlInstance = payload;
+		},
+
 		UPDATE_PLAYLIST(state, payload) {
 			state.playlist = payload;
 		},
@@ -35,6 +45,12 @@ export default createStore({
 	},
 
 	actions: {
+		setCurrentSong(context, payload) {
+			context.commit('UPDATE_CURRENT_SONG', payload);
+
+			window.fileHandling.playSong(payload.path);
+		},
+
 		addToPlaylist(context, payload) {
 			const playlist = context.state.playlist;
 			playlist.push(payload);
@@ -58,4 +74,4 @@ export default createStore({
 
 	}
 
-});
+}));

@@ -1,4 +1,10 @@
+import { Howl, Howler } from 'howler';
 import * as id3 from 'id3js';
+
+
+var howlerInstance = new Object;
+const defaultSettings = {allowedFolders: []};
+
 
 const { contextBridge, ipcRenderer } = require('electron');
 const jsonfile = require('jsonfile');
@@ -18,8 +24,6 @@ const normalizeString = (str) => {
 };
 
 
-const defaultSettings = {allowedFolders: []};
-
 const getPathToSettings = async () => {
 	const pathToExecutable = await ipcRenderer.invoke('getPathToExecutable');
 	const pathToSettings = path.dirname(pathToExecutable) + '\\settings.json';
@@ -31,20 +35,22 @@ const getPathToSettings = async () => {
 };
 
 
-contextBridge.exposeInMainWorld('folderHandling', {
+contextBridge.exposeInMainWorld('fileHandling', {
 
 	addFolder: async () => {
 		const res = await ipcRenderer.invoke('selectFolder');
 		if (res.canceled) {
 			return;
 		};
-		const pathToFolder = res.filePaths[0] + '\\';
 		const pathToSettings = await getPathToSettings();
 		var settings = jsonfile.readFileSync(pathToSettings);
-		if (!settings.allowedFolders.includes(pathToFolder)) {
-			settings.allowedFolders.push(pathToFolder);
-			jsonfile.writeFileSync(pathToSettings, settings);
-		};
+		for (const iterator of res.filePaths) {
+			const pathToFolder = iterator + '\\';
+			if (!settings.allowedFolders.includes(pathToFolder)) {
+				settings.allowedFolders.push(pathToFolder);
+				jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
+			};
+		}
 		ipcRenderer.invoke('updateLocalLibrary');
 	},
 
@@ -62,12 +68,10 @@ contextBridge.exposeInMainWorld('folderHandling', {
 		});
 		var songs = [];
 		for (const pathToFile of files) {
-			const base64File = new Buffer(pathToFile, 'binary').toString('base64');
 			const tags = await id3.fromPath(pathToFile);
 			const song = {
 				album: normalizeString(tags.album) || "",
 				artist: normalizeString(tags.artist) || "",
-				base64: normalizeString(base64File) || "",
 				duration: 0 || 0,
 				images: tags.images || [],
 				path: normalizeString(pathToFile) || "",
@@ -79,6 +83,17 @@ contextBridge.exposeInMainWorld('folderHandling', {
 		};
 		resolve(songs);
 	}),
+
+	playSong: (pathToFile) => {
+		if (!(howlerInstance && Object.keys(howlerInstance).length === 0 && Object.getPrototypeOf(howlerInstance) === Object.prototype)) {
+			howlerInstance.stop();
+		}
+		howlerInstance = new Howl({
+			src: [pathToFile],
+			volume: 0.25,
+		});
+		howlerInstance.play();
+	},
 
 	updateLocalLibrary: (message) => {
 		ipcRenderer.on('updateLocalLibrary', message)

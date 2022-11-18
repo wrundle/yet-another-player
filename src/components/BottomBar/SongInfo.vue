@@ -1,4 +1,18 @@
 <script setup>
+import { useStore } from 'vuex';
+import { ref } from 'vue';
+
+
+const store = useStore();
+const songTitle = ref('');
+const songArtist = ref('');
+
+store.subscribe((mutation, state) => {
+	if (mutation.type === 'UPDATE_CURRENT_SONG') {
+		songTitle.value = state.currentSong.title;
+		songArtist.value = state.currentSong.artist;
+	};
+});
 </script>
 
 
@@ -14,7 +28,7 @@
 			font-bold
 			dark:text-white
 		"
-	>Fur</button>
+	>{{ songTitle }}</button>
 
 	<button
 		class="
@@ -24,7 +38,7 @@
 			dark:text-stone-300
 			dark:hover:text-white
 		"
-	>Helmut</button>
+	>{{ songArtist }}</button>
 
 	</div>
 </template>

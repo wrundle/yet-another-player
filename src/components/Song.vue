@@ -1,11 +1,12 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 import { onMounted } from 'vue';
+import { useStore } from 'vuex';
+
 
 const props = defineProps({
 	album: String,
 	artist: String,
-	base64: String,
 	duration: Number,
 	images: Array,
 	path: String,
@@ -14,7 +15,6 @@ const props = defineProps({
 	year: String
 });
 
-const normalizeTrack = (track) => Number(track.split('/')[0]);
 
 onMounted(() => {
 	var arrayBuffer = props.images[0].data;
@@ -44,9 +44,16 @@ onMounted(() => {
 	}
 });
 
-const showIconsOnHover = (event) => {
-	console.log(event);
-}
+
+const normalizeTrack = (track) => Number(track.split('/')[0]);
+
+const store = useStore();
+
+const playSong = function (event) {
+	if (event) {
+		store.dispatch('setCurrentSong', props)
+	};
+};
 </script>
 
 
@@ -67,6 +74,7 @@ const showIconsOnHover = (event) => {
 			<span :id="props.album + props.title + '-track'">{{ normalizeTrack(props.track) }}</span>
 			<span :id="props.album + props.title + '-btnPlay'" class="text-xl hidden">
 				<Icon
+					@click="playSong"
 					icon="mdi:play"
 					:inline="true"
 				/>
