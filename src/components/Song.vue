@@ -1,4 +1,5 @@
 <script setup>
+import { removeSpaces } from '@/utilities/utilities.js'
 import { Icon } from "@iconify/vue";
 import { onMounted } from 'vue';
 import { useStore } from 'vuex';
@@ -16,9 +17,29 @@ const props = defineProps({
 });
 
 
+const baseId = removeSpaces(props.artist) + removeSpaces(props.album) + removeSpaces(props.title);
+const toggleVisibility = () => {
+	document.getElementById(baseId + '-track').classList.toggle('hidden');
+	document.getElementById(baseId + '-btnPlay').classList.toggle('hidden');
+	document.getElementById(baseId + '-btnHeart').classList.toggle('invisible');
+	document.getElementById(baseId + '-btnDots').classList.toggle('invisible');
+};
+
+
+const store = useStore();
+const setCurrentSong = function (event) {
+	if (event) {
+		store.dispatch('setCurrentSong', props)
+	};
+};
+
+
+const normalizeTrack = (track) => Number(track.split('/')[0]);
+
+
 onMounted(() => {
 	var arrayBuffer = props.images[0].data;
-	var image = document.getElementById(props.album + props.title + '-cover');
+	var image = document.getElementById(baseId + '-cover');
 
 	var bytes = new Uint8Array(arrayBuffer);
 	var blob = new Blob([bytes.buffer]);
@@ -28,70 +49,42 @@ onMounted(() => {
 		image.src = e.target.result;
 	};
 	reader.readAsDataURL(blob);
-
-	var song = document.getElementById(props.album + props.title + '-song');
-	song.onmouseenter = function () {
-		document.getElementById(props.album + props.title + '-track').classList.toggle('hidden');
-		document.getElementById(props.album + props.title + '-btnPlay').classList.toggle('hidden');
-		document.getElementById(props.album + props.title + '-btnHeart').classList.toggle('invisible');
-		document.getElementById(props.album + props.title + '-btnDots').classList.toggle('invisible');
-	}
-	song.onmouseleave = function () {
-		document.getElementById(props.album + props.title + '-track').classList.toggle('hidden');
-		document.getElementById(props.album + props.title + '-btnPlay').classList.toggle('hidden');
-		document.getElementById(props.album + props.title + '-btnHeart').classList.toggle('invisible');
-		document.getElementById(props.album + props.title + '-btnDots').classList.toggle('invisible');
-	}
 });
-
-
-const normalizeTrack = (track) => Number(track.split('/')[0]);
-
-const store = useStore();
-
-const playSong = function (event) {
-	if (event) {
-		store.dispatch('setCurrentSong', props)
-	};
-};
 </script>
 
 
 <template>
 	<div
-		:id="props.album + props.title + '-song'"
+		:id="baseId"
+		@mouseenter="toggleVisibility"
+		@mouseleave="toggleVisibility"
 		class="
 			song
-			px-4
-			flex flex-row
+			px-4 flex flex-row rounded-md select-none
 			dark:hover:bg-neutral-700 dark:text-stone-300 dark:hover:text-white
-			rounded-md
-			select-none
 		"
 	>
 
 		<span class="w-6 mr-4 flex-initial flex place-items-center text-lg justify-end">
-			<span :id="props.album + props.title + '-track'">{{ normalizeTrack(props.track) }}</span>
-			<span :id="props.album + props.title + '-btnPlay'" class="text-xl hidden">
-				<Icon
-					@click="playSong"
-					icon="mdi:play"
-					:inline="true"
-				/>
-			</span>
+			<span :id="baseId + '-track'">{{ normalizeTrack(props.track) }}</span>
+			<Icon
+				:id="baseId + '-btnPlay'"
+				@click="setCurrentSong"
+				icon="mdi:play"
+				class="text-xl hidden"
+			/>
 		</span>
 
 		<img
-			:id="props.album + props.title + '-cover'"
-			class="flex-initial mr-4 w-10 aspect-square object-scale-down"
+			:id="baseId + '-cover'"
 			:src="require('@/assets/placeholder.jpg')"
+			class="flex-initial mr-4 w-10 aspect-square object-scale-down"
 		/>
 
 		<div class="py-2 flex-initial flex flex-col w-1/2">
 			<span class="flex-auto mb-1 text-sm text-start font-medium dark:text-white">
 				{{ props.title }}
 			</span>
-
 			<span class="flex-auto text-xs text-start">
 				<span class="dark:hover:text-white hover:underline cursor-pointer">
 					{{ props.artist }}
@@ -107,10 +100,9 @@ const playSong = function (event) {
 
 		<span class="mr-3 flex-initial flex place-items-center">
 			<Icon
-				:id="props.album + props.title + '-btnHeart'"
-				class="text-stone-300 dark:hover:text-white text-base invisible"
+				:id="baseId + '-btnHeart'"
 				icon="bi:suit-heart"
-				:inline="true"
+				class="text-base invisible text-stone-300 dark:hover:text-white"
 			/>
 		</span>
 
@@ -120,10 +112,9 @@ const playSong = function (event) {
 
 		<span class="text-base flex-initial flex place-items-center">
 			<Icon
-				:id="props.album + props.title + '-btnDots'"
-				class="dark:text-white text-base invisible"
+				:id="baseId + '-btnDots'"
 				icon="bi:three-dots"
-				:inline="true"
+				class="text-base invisible dark:text-white"
 			/>
 		</span>
 

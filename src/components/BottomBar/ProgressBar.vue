@@ -35,7 +35,7 @@ onMounted(() => {
 <template>
 	<div class="flex-auto flex flex-row dark:text-stone-300">
 
-		<div class="flex-auto">
+		<div class="timecode flex-auto select-none">
 			<span class="text-xs">0:00</span>
 		</div>
 
@@ -48,7 +48,7 @@ onMounted(() => {
 			/>
 		</div>
 
-		<div class="flex-auto">
+		<div class="flex-auto select-none">
 			<span class="text-xs">3:35</span>
 		</div>
 

@@ -43,7 +43,10 @@ async function createWindow() {
 	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'))
 	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory', 'multiSelections']}))
 
-	ipcMain.handle('updateLocalLibrary', async () => win.webContents.send('updateLocalLibrary', null))
+	ipcMain.handle('settingsHaveBeenUpdated', () => win.webContents.send('settingsHaveBeenUpdated', null))
+	ipcMain.handle('songStateHasBeenUpdated', (event, args) => {
+		win.webContents.send('songStateHasBeenUpdated', args)
+	})
 
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {

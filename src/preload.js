@@ -1,16 +1,24 @@
 import { Howl, Howler } from 'howler';
 import * as id3 from 'id3js';
 
-
-var howlerInstance = new Object;
-const defaultSettings = {allowedFolders: []};
-
-
 const { contextBridge, ipcRenderer } = require('electron');
 const jsonfile = require('jsonfile');
 const { YMApi } = require('ym-api');
 const path = require('path');
 const fs = require('fs');
+
+
+var howlerInstance = new Object();
+
+const updateSongState = () => {
+	ipcRenderer.invoke('songStateHasBeenUpdated', [howlerInstance.state(), howlerInstance.playing()]);
+};
+
+
+const isObjectEmpty = (obj) => {
+	for (const key in obj) return false;
+	return true;
+};
 
 
 const normalizeString = (str) => {
@@ -23,6 +31,8 @@ const normalizeString = (str) => {
 	return result;
 };
 
+
+const defaultSettings = {allowedFolders: []};
 
 const getPathToSettings = async () => {
 	const pathToExecutable = await ipcRenderer.invoke('getPathToExecutable');
@@ -51,7 +61,11 @@ contextBridge.exposeInMainWorld('fileHandling', {
 				jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
 			};
 		}
-		ipcRenderer.invoke('updateLocalLibrary');
+		ipcRenderer.invoke('settingsHaveBeenUpdated');
+	},
+
+	settingsHaveBeenUpdated: args => {
+		ipcRenderer.on('settingsHaveBeenUpdated', args)
 	},
 
 	readFolders: new Promise(async (resolve, reject) => {
@@ -70,34 +84,41 @@ contextBridge.exposeInMainWorld('fileHandling', {
 		for (const pathToFile of files) {
 			const tags = await id3.fromPath(pathToFile);
 			const song = {
-				album: normalizeString(tags.album) || "",
 				artist: normalizeString(tags.artist) || "",
-				duration: 0 || 0,
-				images: tags.images || [],
-				path: normalizeString(pathToFile) || "",
+				album: normalizeString(tags.album) || "",
 				title: normalizeString(tags.title) || "",
 				track: normalizeString(tags.track) || "",
-				year: normalizeString(tags.year) || ""
+				path: normalizeString(pathToFile) || "",
+				year: normalizeString(tags.year) || "",
+				images: tags.images || [],
+				duration: 0 || 0
 			};
 			songs.push(song);
 		};
 		resolve(songs);
 	}),
 
+});
+
+
+contextBridge.exposeInMainWorld('songControls', {
+
 	playSong: (pathToFile) => {
-		if (!(howlerInstance && Object.keys(howlerInstance).length === 0 && Object.getPrototypeOf(howlerInstance) === Object.prototype)) {
-			howlerInstance.stop();
-		}
-		howlerInstance = new Howl({
-			src: [pathToFile],
-			volume: 0.25,
-		});
+		if (!isObjectEmpty(howlerInstance)) howlerInstance.stop();
+		howlerInstance = new Howl({ src: [pathToFile], volume: 0.25, onload: () => updateSongState() });
 		howlerInstance.play();
+		updateSongState();
 	},
 
-	updateLocalLibrary: (message) => {
-		ipcRenderer.on('updateLocalLibrary', message)
-	}
+	togglePause: () => {
+		if (isObjectEmpty(howlerInstance)) return;
+		howlerInstance.playing() ? howlerInstance.pause() : howlerInstance.play();
+		updateSongState();
+	},
+
+	songStateHasBeenUpdated: args => {
+		ipcRenderer.on('songStateHasBeenUpdated', args)
+	},
 
 });
 

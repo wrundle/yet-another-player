@@ -1,4 +1,5 @@
 <script setup>
+import { removeSpaces } from '@/utilities/utilities.js'
 import { Icon } from "@iconify/vue";
 import { onMounted } from 'vue';
 import Song from './Song.vue';
@@ -9,10 +10,14 @@ const props = defineProps({
 	idx: Number
 })
 
+
+const baseId = removeSpaces(props.songs[0].artist) + removeSpaces(props.songs[0].album);
+
+
 onMounted(() => {
 	if (props.songs[0].images == []) return;
 	var arrayBuffer = props.songs[0].images[0].data;
-	var image = document.getElementById(props.songs[0].album + props.idx);
+	var image = document.getElementById(baseId + '-cover');
 
 	var bytes = new Uint8Array(arrayBuffer);
 	var blob = new Blob([bytes.buffer]);
@@ -39,7 +44,7 @@ onMounted(() => {
 		<div class="flex-auto flex pb-5 pt-10">
 
 			<img
-				:id="props.songs[0].album + props.idx"
+				:id="baseId + '-cover'"
 				class="flex-initial mr-5 aspect-square w-36 object-fill"
 				:src="require('@/assets/placeholder.jpg')"
 			/>
@@ -60,24 +65,21 @@ onMounted(() => {
 
 				<div class="flex-grow"></div>
 
-				<div class="flex-initial flex place-items-center">
+				<div class="flex-initial flex place-items-center text-2xl">
 
 					<Icon
-						class="mr-5 text-3xl hover:scale-110"
 						icon="bi:play-circle-fill"
-						:inline="true"
+						class="mr-4 text-4xl hover:scale-110 transition duration-200"
 					/>
 
 					<Icon
-						class="mr-4 text-stone-300 hover:text-white"
 						icon="bi:suit-heart"
-						:inline="true"
+						class="mr-3 text-stone-300 hover:text-white"
 					/>
 
 					<Icon
-						class="mr-4 text-stone-300 hover:text-white"
 						icon="bi:three-dots"
-						:inline="true"
+						class="mr-3 text-stone-300 hover:text-white"
 					/>
 
 				</div>

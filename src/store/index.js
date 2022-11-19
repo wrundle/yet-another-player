@@ -1,17 +1,5 @@
-import { Howl, Howler } from 'howler';
 import { createStore } from 'vuex';
 import { reactive } from 'vue'
-
-
-// window.folderHandling.msgLibraryUpdated((event, args) => {
-// 	console.log(args);
-
-// 	var audioSrc = 'data:audio/mp3;base64,' + message;
-// 	var audio = new Audio();
-// 	audio.src = audioSrc;
-// 	audio.load();
-// 	audio.play();
-// });
 
 
 export default reactive(createStore({
@@ -48,7 +36,7 @@ export default reactive(createStore({
 		setCurrentSong(context, payload) {
 			context.commit('UPDATE_CURRENT_SONG', payload);
 
-			window.fileHandling.playSong(payload.path);
+			window.songControls.playSong(payload.path);
 		},
 
 		addToPlaylist(context, payload) {

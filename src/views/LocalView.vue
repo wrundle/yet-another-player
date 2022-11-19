@@ -3,14 +3,15 @@ import Album from '@/components/Album.vue';
 import { Icon } from "@iconify/vue";
 
 
+var pickFolder = (event) => {if (event) {window.fileHandling.addFolder()}};
+
 var localLibrary;
 const updateLocalLibrary = async () => {localLibrary = await window.fileHandling.readFolders};
 await updateLocalLibrary();
-window.fileHandling.updateLocalLibrary(async (event, data) => {
+window.fileHandling.settingsHaveBeenUpdated(async (event, data) => {
+	console.log('settingsHaveBeenUpdated');
 	await updateLocalLibrary();
 });
-
-var pickFolder = (event) => {if (event) {window.fileHandling.addFolder()}};
 
 const songsByAlbum = localLibrary.reduce((acc, song) => {
 	const { album } = song;

@@ -3,10 +3,10 @@ import { useStore } from 'vuex';
 import { ref } from 'vue';
 
 
-const store = useStore();
 const songTitle = ref('');
 const songArtist = ref('');
 
+const store = useStore();
 store.subscribe((mutation, state) => {
 	if (mutation.type === 'UPDATE_CURRENT_SONG') {
 		songTitle.value = state.currentSong.title;
