@@ -2,10 +2,14 @@ import { Howl, Howler } from 'howler';
 import * as id3 from 'id3js';
 
 const { contextBridge, ipcRenderer } = require('electron');
+const musicMetadata = require('musicmetadata');
 const jsonfile = require('jsonfile');
 const { YMApi } = require('ym-api');
 const path = require('path');
 const fs = require('fs');
+
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 
 var howlerInstance = new Object();
@@ -65,7 +69,7 @@ contextBridge.exposeInMainWorld('fileHandling', {
 	},
 
 	settingsHaveBeenUpdated: args => {
-		ipcRenderer.on('settingsHaveBeenUpdated', args)
+		ipcRenderer.on('settingsHaveBeenUpdated', args);
 	},
 
 	readFolders: new Promise(async (resolve, reject) => {
@@ -82,16 +86,26 @@ contextBridge.exposeInMainWorld('fileHandling', {
 		});
 		var songs = [];
 		for (const pathToFile of files) {
+			// FIXME: The application my take a long time to read all the files because of this
+			// "...to calculate the duration musicmetadata may need to parse the entire file so only enable this
+			// if you need the functionality" <- from the package documentation
+			var durationInSeconds;
+			var readableStream = fs.createReadStream(pathToFile);
+			var parser = musicMetadata(readableStream, { duration: true }, function (err, metadata) {
+				if (err) throw err;
+				durationInSeconds = metadata.duration;
+				readableStream.close();
+			});
 			const tags = await id3.fromPath(pathToFile);
 			const song = {
-				artist: normalizeString(tags.artist) || "",
-				album: normalizeString(tags.album) || "",
-				title: normalizeString(tags.title) || "",
-				track: normalizeString(tags.track) || "",
-				path: normalizeString(pathToFile) || "",
-				year: normalizeString(tags.year) || "",
-				images: tags.images || [],
-				duration: 0 || 0
+				artist: normalizeString(tags.artist),
+				album: normalizeString(tags.album),
+				title: normalizeString(tags.title),
+				track: normalizeString(tags.track),
+				path: normalizeString(pathToFile),
+				year: normalizeString(tags.year),
+				images: tags.images,
+				duration: durationInSeconds
 			};
 			songs.push(song);
 		};
@@ -105,9 +119,20 @@ contextBridge.exposeInMainWorld('songControls', {
 
 	playSong: (pathToFile) => {
 		if (!isObjectEmpty(howlerInstance)) howlerInstance.stop();
-		howlerInstance = new Howl({ src: [pathToFile], volume: 0.25, onload: () => updateSongState() });
+		howlerInstance = new Howl({ src: [pathToFile], html5: true, volume: 0.25, onload: () => updateSongState() });
 		howlerInstance.play();
 		updateSongState();
+
+		// const audioSourceNode = audioCtx.createMediaElementSource(howlerInstance._sounds[0]._node);
+		// const analyser = audioCtx.createAnalyser();
+		// audioSourceNode.connect(analyser);
+		// analyser.connect(audioCtx.destination);
+
+		// analyser.fftSize = 128;
+		// const bufferLength = analyser.frequencyBinCount;
+		// const dataArray = new Uint8Array(bufferLength);
+		// console.log(dataArray);
+		// const barWidth = canvas.width / bufferLength;
 	},
 
 	togglePause: () => {
@@ -126,7 +151,8 @@ contextBridge.exposeInMainWorld('songControls', {
 contextBridge.exposeInMainWorld('windowControls', {
 	minimize: () => ipcRenderer.invoke('minimize'),
 	maximize: () => ipcRenderer.invoke('maximize'),
-	close: () => ipcRenderer.invoke('close')
+	close: () => ipcRenderer.invoke('close'),
+	reload: () => ipcRenderer.invoke('reload')
 });
 
 

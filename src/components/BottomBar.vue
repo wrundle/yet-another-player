@@ -9,7 +9,7 @@ import MiscButtons from './BottomBar/MiscButtons.vue'
 <template>
 	<!-- <h1>{{ msg }}</h1> -->
 
-	<div class="flex flex-row dark:bg-stone-900 px-5 py-5 border-t dark:border-t-stone-700 flex-initial">
+	<div class="flex-initial flex flex-row dark:bg-stone-900 px-5 py-5 border-t dark:border-t-stone-700">
 
 		<SongInfo />
 

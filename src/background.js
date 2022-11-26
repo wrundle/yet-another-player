@@ -39,14 +39,13 @@ async function createWindow() {
 	ipcMain.handle('minimize', () => win.minimize())
 	ipcMain.handle('maximize', () => win.isMaximized() ? win.unmaximize() : win.maximize())
 	ipcMain.handle('close', () => {win.webContents.closeDevTools(); win.close()})
+	ipcMain.handle('reload', (event, args) => win.webContents.reload())
 
 	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'))
 	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory', 'multiSelections']}))
 
 	ipcMain.handle('settingsHaveBeenUpdated', () => win.webContents.send('settingsHaveBeenUpdated', null))
-	ipcMain.handle('songStateHasBeenUpdated', (event, args) => {
-		win.webContents.send('songStateHasBeenUpdated', args)
-	})
+	ipcMain.handle('songStateHasBeenUpdated', (event, args) => win.webContents.send('songStateHasBeenUpdated', args))
 
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {

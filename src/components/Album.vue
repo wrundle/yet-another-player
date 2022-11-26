@@ -6,8 +6,7 @@ import Song from './Song.vue';
 
 
 const props = defineProps({
-	songs: Array,
-	idx: Number
+	songs: Array
 })
 
 
@@ -97,7 +96,7 @@ onMounted(() => {
 			"
 		>
 
-			<span class="w-6 mr-4 flex-initial flex place-items-center text-lg justify-end">
+			<span class="w-7 mr-4 flex-initial flex place-items-center text-lg justify-end">
 				#
 			</span>
 

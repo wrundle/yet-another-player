@@ -5,9 +5,10 @@ import { reactive } from 'vue'
 export default reactive(createStore({
 
 	state: {
+		songs: new Array(),
 		currentSong: new Object,
 		howlInstance: new Object,
-		playlist: []
+		currentPlaylist: new Array()
 	},
 
 	getters: {
@@ -15,6 +16,10 @@ export default reactive(createStore({
 	},
 
 	mutations: {
+		UPDATE_SONGS(state, payload) {
+			state.songs = payload;
+		},
+
 		UPDATE_CURRENT_SONG(state, payload) {
 			state.currentSong = payload;
 		},
@@ -23,26 +28,21 @@ export default reactive(createStore({
 			state.howlInstance = payload;
 		},
 
-		UPDATE_PLAYLIST(state, payload) {
+		UPDATE_CURRENT_PLAYLIST(state, payload) {
 			state.playlist = payload;
 		},
-
-		UPDATE_MUSIC_LIBRARY(state, payload) {
-			state.musicLibrary = payload;
-		}
 	},
 
 	actions: {
+		async fetchSongs(context) {
+			const response = await window.fileHandling.readFolders;
+			context.commit('UPDATE_SONGS', response);
+		},
+
 		setCurrentSong(context, payload) {
 			context.commit('UPDATE_CURRENT_SONG', payload);
 
 			window.songControls.playSong(payload.path);
-		},
-
-		addToPlaylist(context, payload) {
-			const playlist = context.state.playlist;
-			playlist.push(payload);
-			context.commit('UPDATE_PLAYLIST', playlist);
 		},
 
 		playTrack(context) {
@@ -53,9 +53,11 @@ export default reactive(createStore({
 			Howler.volume(0.5);
 		},
 
-		log(context) {
-			console.log(context.state.playlist);
-		}
+		addToCurrentPlaylist(context, payload) {
+			const playlist = context.state.playlist;
+			playlist.push(payload);
+			context.commit('UPDATE_CURRENT_PLAYLIST', playlist);
+		},
 	},
 
 	modules: {

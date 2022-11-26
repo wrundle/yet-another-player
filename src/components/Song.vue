@@ -35,6 +35,11 @@ const setCurrentSong = function (event) {
 
 
 const normalizeTrack = (track) => Number(track.split('/')[0]);
+const normalizeDuration = (durationInSeconds) => {
+	const minutes = Math.floor(durationInSeconds / 60);
+	const seconds = durationInSeconds - minutes * 60;
+	return minutes + ":" + seconds;
+};
 
 
 onMounted(() => {
@@ -65,13 +70,13 @@ onMounted(() => {
 		"
 	>
 
-		<span class="w-6 mr-4 flex-initial flex place-items-center text-lg justify-end">
+		<span class="w-7 min-w-7 mr-4 flex-initial flex place-items-center text-lg justify-end">
 			<span :id="baseId + '-track'">{{ normalizeTrack(props.track) }}</span>
 			<Icon
 				:id="baseId + '-btnPlay'"
 				@click="setCurrentSong"
 				icon="mdi:play"
-				class="text-xl hidden"
+				class="hidden"
 			/>
 		</span>
 
@@ -107,7 +112,7 @@ onMounted(() => {
 		</span>
 
 		<span class="mr-3 w-20 justify-center text-sm flex-initial flex place-items-center">
-			{{ props.duration }}
+			{{ normalizeDuration(props.duration) }}
 		</span>
 
 		<span class="text-base flex-initial flex place-items-center">
