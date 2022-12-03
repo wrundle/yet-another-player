@@ -1,11 +1,49 @@
 <script setup>
-import { onMounted } from 'vue'
+import { normalizeDuration } from '@/utilities/vue.js'
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { ref } from 'vue';
 
-// FOR TESTING PURPOSES ONLY
-// setInterval(() => {
-// 	document.getElementById("progress-bar").value++;
-// 	colorRangeSlider(document.getElementById("progress-bar"));
-// }, 1000);
+
+const isLoading = ref(false);
+const isPlaying = ref(false);
+
+const elapsedTimeInSeconds = ref(0);
+const elapsedTimeString = ref(normalizeDuration(0));
+
+const songDurationInSeconds = ref(0);
+const songDurationString = ref(normalizeDuration(0));
+
+
+window.songControls.songStateHasBeenUpdated((event, args) => {
+	// console.log(args);
+	isLoading.value = args[0] == 'loading' ? true : false;
+	isPlaying.value = args[1];
+});
+
+
+const store = useStore();
+store.subscribe((mutation, state) => {
+	if (mutation.type === 'UPDATE_CURRENT_SONG') {
+		elapsedTimeInSeconds.value = 0
+		elapsedTimeString.value = normalizeDuration(elapsedTimeInSeconds.value);
+		songDurationInSeconds.value = state.currentSong.duration;
+		songDurationString.value = normalizeDuration(songDurationInSeconds.value);
+	};
+});
+
+
+setInterval(() => {
+	if (!isPlaying.value) {
+		return;
+	};
+	elapsedTimeInSeconds.value += 1;
+	elapsedTimeString.value = normalizeDuration(elapsedTimeInSeconds.value);
+	const percentage = Math.round(elapsedTimeInSeconds.value / songDurationInSeconds.value * 100);
+	document.getElementById("progress-bar").value = percentage;
+	colorRangeSlider(document.getElementById("progress-bar"));
+}, 1000);
+
 
 var isBeignHovered = false;
 
@@ -36,7 +74,7 @@ onMounted(() => {
 	<div class="flex-auto flex flex-row dark:text-stone-300">
 
 		<div class="timecode flex-auto select-none">
-			<span class="text-xs">0:00</span>
+			<span class="text-xs">{{ elapsedTimeString }}</span>
 		</div>
 
 		<div class="flex-auto w-full mx-2">
@@ -49,7 +87,7 @@ onMounted(() => {
 		</div>
 
 		<div class="flex-auto select-none">
-			<span class="text-xs">3:35</span>
+			<span class="text-xs">{{ songDurationString }}</span>
 		</div>
 
 	</div>

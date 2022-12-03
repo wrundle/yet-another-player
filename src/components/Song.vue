@@ -1,59 +1,84 @@
 <script setup>
-import { removeSpaces } from '@/utilities/utilities.js'
+import { removeSpaces, normalizeDuration, getImageSrcFromBuffer } from '@/utilities/vue.js'
+import { ref, onMounted } from 'vue';
 import { Icon } from "@iconify/vue";
-import { onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 
 const props = defineProps({
-	album: String,
-	artist: String,
-	duration: Number,
-	images: Array,
-	path: String,
-	title: String,
-	track: String,
-	year: String
+	duration:	Number,
+	artists:	Array,
+	cover:		Uint8Array,
+	track:		Object,
+	album:		String,
+	title:		String,
+	year:		String,
+	path:		String,
+	id:			Number
 });
 
 
-const baseId = removeSpaces(props.artist) + removeSpaces(props.album) + removeSpaces(props.title);
-const toggleVisibility = () => {
-	document.getElementById(baseId + '-track').classList.toggle('hidden');
-	document.getElementById(baseId + '-btnPlay').classList.toggle('hidden');
-	document.getElementById(baseId + '-btnHeart').classList.toggle('invisible');
-	document.getElementById(baseId + '-btnDots').classList.toggle('invisible');
-};
-
-
 const store = useStore();
-const setCurrentSong = function (event) {
+
+const baseId = removeSpaces(props.artists[0]) + removeSpaces(props.album) + props.id + 'song';
+
+
+const isCurrent = ref(false);
+const isPlaying = ref(false);
+const isBeingHoveredOver = ref(false);
+
+
+const playBtnClick = function (event) {
 	if (event) {
-		store.dispatch('setCurrentSong', props)
+		if (isCurrent.value) window.songControls.togglePause()
+		else {
+			store.dispatch('setCurrentSong', props);
+			store.dispatch('setCurrentPlaylist', store.state.songsByAlbum);
+		};
 	};
 };
-
-
-const normalizeTrack = (track) => Number(track.split('/')[0]);
-const normalizeDuration = (durationInSeconds) => {
-	const minutes = Math.floor(durationInSeconds / 60);
-	const seconds = durationInSeconds - minutes * 60;
-	return minutes + ":" + seconds;
+const pauseBtnClick = function (event) {
+	if (event) window.songControls.togglePause();
 };
+
+
+const visibilityOn = () => {
+	isBeingHoveredOver.value = true
+	document.getElementById(baseId + '-btnHeart').classList.remove('invisible');
+	document.getElementById(baseId + '-btnDots').classList.remove('invisible');
+};
+const visibilityOff = () => {
+	isBeingHoveredOver.value = false
+	document.getElementById(baseId + '-btnHeart').classList.add('invisible');
+	document.getElementById(baseId + '-btnDots').classList.add('invisible');
+};
+
+
+const setActive = () => {
+	document.getElementById(baseId + '-trackWrapper').classList.add('text-green-500');
+	isCurrent.value = true;
+};
+const unsetActive = () => {
+	document.getElementById(baseId + '-trackWrapper').classList.remove('text-green-500');
+	isCurrent.value = false;
+	isPlaying.value = false;
+	isBeingHoveredOver.value = false;
+};
+
+
+store.subscribe((mutation, state) => {
+	if (mutation.type === 'UPDATE_CURRENT_SONG') mutation.payload.id == props.id ? setActive() : unsetActive();
+	if (mutation.type === 'UPDATE_CURRENT_SONG_STATE' && state.currentSong.id == props.id) {
+		isPlaying.value = mutation.payload.isPlaying;
+	};
+});
 
 
 onMounted(() => {
-	var arrayBuffer = props.images[0].data;
-	var image = document.getElementById(baseId + '-cover');
-
-	var bytes = new Uint8Array(arrayBuffer);
-	var blob = new Blob([bytes.buffer]);
-
-	var reader = new FileReader();
-	reader.onload = function (e) {
-		image.src = e.target.result;
-	};
-	reader.readAsDataURL(blob);
+	getImageSrcFromBuffer(props.cover, (event) => {
+		var image = document.getElementById(baseId + '-cover');
+		image.src = event.target.result;
+	});
 });
 </script>
 
@@ -61,8 +86,8 @@ onMounted(() => {
 <template>
 	<div
 		:id="baseId"
-		@mouseenter="toggleVisibility"
-		@mouseleave="toggleVisibility"
+		@mouseenter="visibilityOn"
+		@mouseleave="visibilityOff"
 		class="
 			song
 			px-4 flex flex-row rounded-md select-none
@@ -70,14 +95,20 @@ onMounted(() => {
 		"
 	>
 
-		<span class="w-7 min-w-7 mr-4 flex-initial flex place-items-center text-lg justify-end">
-			<span :id="baseId + '-track'">{{ normalizeTrack(props.track) }}</span>
-			<Icon
-				:id="baseId + '-btnPlay'"
-				@click="setCurrentSong"
-				icon="mdi:play"
-				class="hidden"
-			/>
+		<span
+			:id="baseId + '-trackWrapper'"
+			class="
+				w-7 min-w-7 mr-4 flex-initial flex place-items-center text-lg justify-end
+			"
+		>
+
+			<span v-if="!isCurrent && !isBeingHoveredOver" :id="baseId + '-track'">{{ props.track.no }}</span>
+
+			<span v-else :id="baseId + '-btnPlay'">
+				<Icon v-if="isPlaying" @click="pauseBtnClick" icon="mdi:pause" class="animate-pulse" />
+				<Icon v-else @click="playBtnClick" icon="mdi:play" />
+			</span>
+
 		</span>
 
 		<img
@@ -92,7 +123,7 @@ onMounted(() => {
 			</span>
 			<span class="flex-auto text-xs text-start">
 				<span class="dark:hover:text-white hover:underline cursor-pointer">
-					{{ props.artist }}
+					{{ props.artists[0] }}
 				</span>
 			</span>
 		</div>

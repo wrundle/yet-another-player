@@ -1,13 +1,24 @@
 <script setup>
+// TODO: "select-none"
+// I've used "select-none" class quite a few times throughout the application
+// goota find and remove it from all those files and apply it here
+
+
 import { useStore } from 'vuex';
 
-
 const store = useStore();
-store.dispatch('fetchSongs');
+
+window.songControls.songStateHasBeenUpdated((event, args) => {
+	// console.log(args);
+	store.dispatch('setCurrentSongState', {
+		isLoading: args[0] == 'loading' ? true : false,
+		isPlaying: args[1]
+	});
+});
 
 window.fileHandling.settingsHaveBeenUpdated((event, data) => {
-	store.dispatch('fetchSongs');
-	// window.windowControls.reload();
+	// store.dispatch('fetchSongs');
+	window.windowControls.reload();
 });
 </script>
 

@@ -1,31 +1,34 @@
 <script setup>
-import { removeSpaces } from '@/utilities/utilities.js'
+import { removeSpaces, getImageSrcFromBuffer } from '@/utilities/vue.js'
 import { Icon } from "@iconify/vue";
 import { onMounted } from 'vue';
+import { useStore } from 'vuex';
 import Song from './Song.vue';
 
 
-const props = defineProps({
-	songs: Array
-})
+const props = defineProps({ songs: Array })
 
 
-const baseId = removeSpaces(props.songs[0].artist) + removeSpaces(props.songs[0].album);
+const store = useStore();
+
+const baseId = removeSpaces(props.songs[0].artists[0]) + removeSpaces(props.songs[0].album);
+
+
+// const playBtnClick = function (event) {
+// 	if (event) {
+// 		const payload = new Object();
+// 		payload[props.songs[0].album] = store.state.songsByAlbum[props.songs[0].album];
+// 		store.dispatch('setCurrentSong', props.songs[0]);
+// 		store.dispatch('setCurrentPlaylist', payload);
+// 	};
+// };
 
 
 onMounted(() => {
-	if (props.songs[0].images == []) return;
-	var arrayBuffer = props.songs[0].images[0].data;
-	var image = document.getElementById(baseId + '-cover');
-
-	var bytes = new Uint8Array(arrayBuffer);
-	var blob = new Blob([bytes.buffer]);
-
-	var reader = new FileReader();
-	reader.onload = function (e) {
-		image.src = e.target.result;
-	};
-	reader.readAsDataURL(blob);
+	getImageSrcFromBuffer(props.songs[0].cover, (event) => {
+		var image = document.getElementById(baseId + '-cover');
+		image.src = event.target.result;
+	});
 });
 </script>
 
@@ -68,6 +71,7 @@ onMounted(() => {
 
 					<Icon
 						icon="bi:play-circle-fill"
+						@click=""
 						class="mr-4 text-4xl hover:scale-110 transition duration-200"
 					/>
 
@@ -128,7 +132,7 @@ onMounted(() => {
 		</div>
 
 		<div class="flex-auto flex flex-col">
-			<div v-for="song in props.songs">
+			<div v-for="song in props.songs" :key="song.id">
 				<Song v-bind="song" />
 			</div>
 		</div>

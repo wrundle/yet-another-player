@@ -13,7 +13,7 @@ import MiscButtons from './BottomBar/MiscButtons.vue'
 
 		<SongInfo />
 
-		<div class="flex-auto w-3/6 flex flex-col place-content-center">
+		<div class="flex-auto w-3/7 flex flex-col place-content-center">
 
 			<ControlButtons />
 
@@ -21,7 +21,7 @@ import MiscButtons from './BottomBar/MiscButtons.vue'
 
 		</div>
 
-		<div class="flex-auto w-1/6 flex justify-end content-center">
+		<div class="flex-auto w-2/7 flex justify-end content-center">
 
 			<MiscButtons />
 

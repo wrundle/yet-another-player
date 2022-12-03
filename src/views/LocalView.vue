@@ -1,15 +1,11 @@
 <script setup>
-import { useStore } from 'vuex';
-
 // @ is an alias to /src
-import songsByAlbum from '@/components/SongsByAlbum.vue';
-import RightColumn from '@/components/RightColumn.vue';
+import CurrentPlaylist from '@/components/CurrentPlaylist.vue';
 import LeftColumn from '@/components/LeftColumn.vue';
 import BottomBar from '@/components/BottomBar.vue';
+import Loading from '@/components/Loading.vue';
 import TopBar from '@/components/TopBar.vue';
-
-
-const store = useStore();
+import Main from '@/components/Main.vue';
 </script>
 
 
@@ -25,9 +21,12 @@ const store = useStore();
 
 			<LeftColumn />
 
-			<songsByAlbum />
+			<Suspense>
+				<template #default><Main /></template>
+				<template #fallback><Loading /></template>
+			</Suspense>
 
-			<RightColumn />
+			<CurrentPlaylist />
 
 		</div>
 

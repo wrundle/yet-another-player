@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue";
 
 
 <template>
-	<div class="flex-auto flex flex-row justify-end place-items-center text-xl">
+	<div class="flex-1 flex flex-row justify-end place-items-center text-xl">
 
 		<Icon
 			id=""

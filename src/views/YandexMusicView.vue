@@ -1,6 +1,6 @@
 <script setup>
 // @ is an alias to /src
-import RightColumn from '@/components/RightColumn.vue';
+import CurrentPlaylist from '@/components/CurrentPlaylist.vue';
 import LeftColumn from '@/components/LeftColumn.vue';
 import BottomBar from '@/components/BottomBar.vue';
 import TopBar from '@/components/TopBar.vue';
@@ -21,7 +21,7 @@ import TopBar from '@/components/TopBar.vue';
 
 			<div class="flex-grow w-4/6"></div>
 
-			<RightColumn />
+			<CurrentPlaylist />
 
 		</div>
 

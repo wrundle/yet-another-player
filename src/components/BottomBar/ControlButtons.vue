@@ -1,17 +1,9 @@
 <script setup>
 import { Icon } from "@iconify/vue";
+import { useStore } from 'vuex';
 import { ref } from "vue";
 
-
-const isLoading = ref(false);
-const isPlayting = ref(false);
-
-window.songControls.songStateHasBeenUpdated((event, args) => {
-	// console.log(args);
-	isLoading.value = args[0] == 'loading' ? true : false;
-	isPlayting.value = args[1];
-});
-
+const store = useStore();
 
 const playBtnClick = () => {
 	window.songControls.togglePause();
@@ -28,24 +20,23 @@ const pauseBtnClick = () => {
 
 		<Icon
 			id="previous-button"
-			class="mx-2 text-stone-300 hover:text-white"
+			class="mx-4 text-stone-300 hover:text-white text-lg"
+			icon="bi:shuffle"
+			:inline="true"
+		/>
+
+		<Icon
+			id="previous-button"
+			class="mx-3 text-stone-300 hover:text-white"
 			icon="bi:skip-start-fill"
 			:inline="true"
 		/>
 
 		<Icon
-			v-if="isLoading"
-			id="loading-icon"
-			class="mx-2 text-4xl animate-spin"
-			icon="mdi:loading"
-			:inline="true"
-		/>
-
-		<Icon
-			v-else-if="isPlayting"
+			v-if="store.state.currentSongState.isPlaying"
 			id="pause-button"
 			@click="pauseBtnClick"
-			class="mx-2 hover:scale-110 transition duration-200 text-4xl"
+			class="mx-3 hover:scale-110 transition duration-200 text-4xl"
 			icon="bi:pause-circle-fill"
 			:inline="true"
 		/>
@@ -54,15 +45,22 @@ const pauseBtnClick = () => {
 			v-else
 			id="play-button"
 			@click="playBtnClick"
-			class="mx-2 hover:scale-110 transition duration-200 text-4xl"
+			class="mx-3 hover:scale-110 transition duration-200 text-4xl"
 			icon="bi:play-circle-fill"
 			:inline="true"
 		/>
 
 		<Icon
 			id="next-button"
-			class="mx-2 text-stone-300 hover:text-white"
+			class="mx-3 text-stone-300 hover:text-white"
 			icon="bi:skip-end-fill"
+			:inline="true"
+		/>
+
+		<Icon
+			id="previous-button"
+			class="mx-4 text-stone-300 hover:text-white text-lg"
+			icon="bi:repeat"
 			:inline="true"
 		/>
 
