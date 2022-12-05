@@ -1,5 +1,5 @@
 <script setup>
-import { getImageSrcFromBuffer } from '@/utilities/vue.js'
+import { isObjectEmpty, getImageSrcFromBuffer } from '@/utilities/utilities.js'
 import * as Vibrant from 'node-vibrant';
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
@@ -7,19 +7,24 @@ import { useStore } from 'vuex';
 
 const store = useStore();
 
-store.subscribe((mutation, state) => {
-	if (mutation.type === 'UPDATE_CURRENT_SONG') {
-		getImageSrcFromBuffer(state.currentSong.cover, (event) => {
-			var image = document.getElementById('left-column-img');
-			image.src = event.target.result;
-			Vibrant.from(event.target.result).getPalette()
-				.then((result) => {
-					const rgb = result.Vibrant.rgb
-					image.style.boxShadow = `0px 0px 10px 10px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.8)`
-				});
-		});
+const init = () => {
+	if (isObjectEmpty(store.state.currentSong)) {
+		return;
 	};
-});
+	getImageSrcFromBuffer(store.state.currentSong.cover, (event) => {
+		var image = document.getElementById('left-sidebar-img');
+		image.src = event.target.result;
+		Vibrant.from(event.target.result).getPalette()
+			.then((result) => {
+				const rgb = result.Vibrant.rgb
+				image.style.boxShadow = `0px 0px 10px 10px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.8)`
+			});
+	});
+};
+
+init();
+
+store.subscribe((mutation, state) => mutation.type === 'UPDATE_CURRENT_SONG' ? init() : {});
 </script>
 
 
@@ -33,36 +38,27 @@ store.subscribe((mutation, state) => {
 
 			<div class="pb-4 border-b dark:border-stone-700">
 
-				<router-link to="/" id="LocalViewLink">
+				<router-link to="/" id="MainViewLink">
 					<span class="
 						flex place-items-center px-2 py-2 text-sm font-bold
 						transition-colors ease-in-out duration-300
 						dark:hover:text-white
 					">
-						<Icon icon="material-symbols:filter-1-sharp" class="mx-3 text-2xl" />
+						<Icon icon="mdi:home" class="mx-3 text-2xl" />
 						Локальные Файлы
 					</span>
 				</router-link>
 
-				<router-link to="/ym" id="YandexMusicView">
+				<router-link to="/search" id="SearchViewLink">
 					<span class="
 						flex place-items-center px-2 py-2 text-sm font-bold
 						transition-colors ease-in-out duration-300
 						dark:hover:text-white
 					">
-						<Icon icon="material-symbols:filter-2-sharp" class="mx-3 text-2xl" />
-
+						<Icon icon="mdi:magnify" class="mx-3 text-2xl" />
+						Поиск
 					</span>
 				</router-link>
-
-				<span class="
-					flex place-items-center px-2 py-2 text-sm font-bold
-					transition-colors ease-in-out duration-300
-					dark:hover:text-white cursor-pointer
-				">
-					<Icon icon="mdi:magnify" class="mx-3 text-2xl" />
-					Поиск
-				</span>
 
 				<div class="h-5"></div>
 
@@ -99,12 +95,12 @@ store.subscribe((mutation, state) => {
 
 		</div>
 
-		<div id="left-column-img-wrapper" class="flex-initial max-w-fill aspect-square object-cover relative">
-			<img id="left-column-img" class="w-max aspect-square object-cover" />
+		<div id="left-sidebar-img-wrapper" class="flex-initial max-w-fill aspect-square object-cover relative">
+			<img id="left-sidebar-img" class="w-max aspect-square object-cover" />
 			<button
-				id="left-column-img-btn"
+				id="left-sidebar-img-btn"
 				class="
-					absolute top-0 right-0 mr-2 mt-2 text-3xl rounded-full
+					absolute top-0 right-0 mr-2 mt-2 text-2xl rounded-full
 					hover:scale-110 hover:text-white transition duration-100
 				"
 			>
@@ -117,20 +113,21 @@ store.subscribe((mutation, state) => {
 
 
 <style scoped>
-#left-column-img-wrapper {
+#left-sidebar-img-wrapper {
 	box-shadow: 0px 0px 20px 5px rgba(255, 255, 255, 0.3);
 	/* -webkit-transition : all ease-in-out 5s;
 	transition : all ease-in-out 5s; */
 }
-#left-column-img-wrapper:hover #left-column-img-btn {
-	visibility: visible;
+
+#left-sidebar-img-wrapper:hover #left-sidebar-img-btn {
+	opacity: 100;
 }
 
-#left-column-img-btn {
-	visibility: hidden;
+#left-sidebar-img-btn {
+	opacity: 0;
 	background: rgba(0, 0, 0, 0.7);
 }
-#left-column-img-btn:hover {
+#left-sidebar-img-btn:hover {
 	background: rgba(0, 0, 0, 0.8);
 }
 </style>

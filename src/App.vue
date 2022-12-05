@@ -15,11 +15,6 @@ window.songControls.songStateHasBeenUpdated((event, args) => {
 		isPlaying: args[1]
 	});
 });
-
-window.fileHandling.settingsHaveBeenUpdated((event, data) => {
-	// store.dispatch('fetchSongs');
-	window.windowControls.reload();
-});
 </script>
 
 

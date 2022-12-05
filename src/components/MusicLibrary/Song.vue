@@ -1,5 +1,5 @@
 <script setup>
-import { removeSpaces, normalizeDuration, getImageSrcFromBuffer } from '@/utilities/vue.js'
+import { removeSpaces, normalizeDuration, getImageSrcFromBuffer } from '@/utilities/utilities.js'
 import { ref, onMounted } from 'vue';
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
@@ -55,11 +55,9 @@ const visibilityOff = () => {
 
 
 const setActive = () => {
-	document.getElementById(baseId + '-trackWrapper').classList.add('text-green-500');
 	isCurrent.value = true;
 };
 const unsetActive = () => {
-	document.getElementById(baseId + '-trackWrapper').classList.remove('text-green-500');
 	isCurrent.value = false;
 	isPlaying.value = false;
 	isBeingHoveredOver.value = false;
@@ -75,6 +73,10 @@ store.subscribe((mutation, state) => {
 
 
 onMounted(() => {
+	if (store.state.currentSong.id == props.id) {
+		setActive();
+		isPlaying.value = store.state.currentSongState.isPlaying;
+	};
 	getImageSrcFromBuffer(props.cover, (event) => {
 		var image = document.getElementById(baseId + '-cover');
 		image.src = event.target.result;
@@ -95,17 +97,24 @@ onMounted(() => {
 		"
 	>
 
-		<span
-			:id="baseId + '-trackWrapper'"
-			class="
-				w-7 min-w-7 mr-4 flex-initial flex place-items-center text-lg justify-end
-			"
-		>
+		<span class="w-7 min-w-7 mr-4 flex-initial flex place-items-center text-lg justify-end">
 
-			<span v-if="!isCurrent && !isBeingHoveredOver" :id="baseId + '-track'">{{ props.track.no }}</span>
+			<span v-if="(!isCurrent && !isBeingHoveredOver)" :id="baseId + '-track'">{{ props.track.no }}</span>
+
+			<span
+				v-else-if="(isCurrent && !isBeingHoveredOver && !isPlaying)"
+				:id="baseId + '-track'"
+				class="text-green-500"
+			>{{ props.track.no }}</span>
 
 			<span v-else :id="baseId + '-btnPlay'">
-				<Icon v-if="isPlaying" @click="pauseBtnClick" icon="mdi:pause" class="animate-pulse" />
+				<Icon v-if="(isPlaying && isBeingHoveredOver)" @click="pauseBtnClick" icon="mdi:pause" />
+				<Icon
+					v-else-if="isPlaying"
+					@click="pauseBtnClick"
+					icon="mdi:pause"
+					class="text-green-500 animate-pulse"
+				/>
 				<Icon v-else @click="playBtnClick" icon="mdi:play" />
 			</span>
 

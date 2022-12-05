@@ -1,4 +1,4 @@
-const { isObjectEmpty } = require('./utilities/electron.js');
+const { isObjectEmpty } = require('./utilities/utilities.js');
 const { contextBridge, ipcRenderer } = require('electron');
 const musicMetadata = require('musicmetadata');
 const {Howl, Howler} = require('howler');
@@ -10,22 +10,9 @@ const fs = require('fs');
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-const defaultSettings = {allowedFolders: []};
-
 const YandexMusicApi = new YMApi();
 
 var howlerInstance = new Object();
-
-
-const getPathToSettings = async () => {
-	const pathToExecutable = await ipcRenderer.invoke('getPathToExecutable');
-	const pathToSettings = path.dirname(pathToExecutable) + '\\settings.json';
-	const doSettingsExist = await fs.promises.stat(pathToSettings).then(() => true, () => false);
-	if (!doSettingsExist) {
-		jsonfile.writeFileSync(pathToSettings, defaultSettings);
-	};
-	return pathToSettings;
-};
 
 
 const updateSongState = () => {
@@ -40,7 +27,7 @@ contextBridge.exposeInMainWorld('fileHandling', {
 		if (res.canceled) {
 			return;
 		};
-		const pathToSettings = await getPathToSettings();
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
 		var settings = jsonfile.readFileSync(pathToSettings);
 		for (const iterator of res.filePaths) {
 			const pathToFolder = iterator + '\\';
@@ -49,15 +36,11 @@ contextBridge.exposeInMainWorld('fileHandling', {
 				jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
 			};
 		};
-		ipcRenderer.invoke('settingsHaveBeenUpdated');
-	},
-
-	settingsHaveBeenUpdated: args => {
-		ipcRenderer.on('settingsHaveBeenUpdated', args);
+		ipcRenderer.invoke('reload');
 	},
 
 	readFolders: new Promise(async (resolve, reject) => {
-		const pathToSettings = await getPathToSettings();
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
 		const settings = jsonfile.readFileSync(pathToSettings);
 		var files = [];
 		settings.allowedFolders.forEach(pathToFolder => {
@@ -68,7 +51,6 @@ contextBridge.exposeInMainWorld('fileHandling', {
 				};
 			});
 		});
-
 		var id = 0;
 		var songs = [];
 		for (const pathToFile of files) {

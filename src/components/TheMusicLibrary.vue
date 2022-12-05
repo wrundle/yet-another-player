@@ -1,14 +1,21 @@
 <script setup>
-import Album from '@/components/Album.vue';
+import AlbumDetails from '@/components/MusicLibrary/AlbumDetails.vue';
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
 import { ref } from "vue";
 
 
-var selectFolder = (event) => {if (event) {window.fileHandling.addFolder()}};
-
-
 const store = useStore();
+
+const view = ref(true);
+
+
+const selectFolder = (event) => {if (event) {window.fileHandling.addFolder()}};
+
+function setView(param) {
+	view.value = param;
+};
+
 
 await store.dispatch('fetchSongs');
 
@@ -18,9 +25,9 @@ const albums = ref(store.state.albums);
 
 
 <template>
-	<div class="local-view flex-grow w-4/6 flex flex-col max-h-full overflow-auto select-none">
+	<div class="main flex-grow w-4/6 flex flex-col max-h-full overflow-auto select-none">
 
-		<div class="flex flex-row justify-between p-1">
+		<div class="flex flex-row justify-between px-3">
 
 			<span class="flex">
 				<button
@@ -36,7 +43,7 @@ const albums = ref(store.state.albums);
 				<span
 					@click=""
 					class="
-						flex place-items-center text-sm cursor-pointer mr-3
+						flex place-items-center text-sm cursor-pointer
 						dark:text-stone-300 dark:hover:text-white
 					"
 				>
@@ -45,7 +52,7 @@ const albums = ref(store.state.albums);
 				</span>
 
 				<button
-					@click=""
+					@click="setView(true)"
 					class="
 						p-2 text-xl
 						dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white rounded-full
@@ -55,7 +62,7 @@ const albums = ref(store.state.albums);
 				</button>
 
 				<button
-					@click=""
+					@click="setView(false)"
 					class="
 						p-2 text-xl
 						dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white rounded-full
@@ -67,7 +74,7 @@ const albums = ref(store.state.albums);
 				<button
 					@click=""
 					class="
-						p-1 text-2xl ml-3
+						p-1 text-2xl
 						dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white rounded-full
 					"
 				>
@@ -78,9 +85,9 @@ const albums = ref(store.state.albums);
 
 		</div>
 
-		<div class="flex-auto">
+		<div v-if="view" class="flex-auto">
 			<div v-for="(album, index) in albums">
-				<Album :songs="songsByAlbum[albums[index]]" />
+				<AlbumDetails :songs="songsByAlbum[albums[index]]" />
 			</div>
 		</div>
 
@@ -89,15 +96,19 @@ const albums = ref(store.state.albums);
 
 
 <style scoped>
-.local-view::-webkit-scrollbar {
+.main {
+	overflow-y: overlay;
+}
+
+.main::-webkit-scrollbar {
     width: 10px;
 }
 
-.local-view::-webkit-scrollbar-thumb {
+.main::-webkit-scrollbar-thumb {
 	background: rgba(255, 255, 255, 0.2);
 }
 
-.local-view::-webkit-scrollbar-thumb:hover {
+.main::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
 }
 </style>

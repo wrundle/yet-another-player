@@ -1,5 +1,5 @@
 <script setup>
-import { removeSpaces } from '@/utilities/vue.js'
+import { removeSpaces } from '@/utilities/utilities.js'
 import { useStore } from 'vuex';
 
 

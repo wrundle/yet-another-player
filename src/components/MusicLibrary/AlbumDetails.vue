@@ -1,5 +1,5 @@
 <script setup>
-import { removeSpaces, getImageSrcFromBuffer } from '@/utilities/vue.js'
+import { removeSpaces, getImageSrcFromBuffer } from '@/utilities/utilities.js'
 import { Icon } from "@iconify/vue";
 import { onMounted } from 'vue';
 import { useStore } from 'vuex';

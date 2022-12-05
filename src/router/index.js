@@ -1,25 +1,29 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import LocalView from '../views/LocalView.vue'
+import { createRouter, createWebHashHistory } from 'vue-router';
+import TheaterView from '../views/TheaterView.vue';
+import SearchView from '../views/SearchView.vue';
+import MainView from '../views/MainView.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'local',
-    component: LocalView
+    name: 'main',
+    component: MainView
   },
   {
-    path: '/ym',
-    name: 'YandexMusicView',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/YandexMusicView.vue')
-  }
+    path: '/search',
+    name: 'search',
+    component: SearchView
+  },
+  {
+    path: '/theater',
+    name: 'theater',
+    component: TheaterView
+  },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

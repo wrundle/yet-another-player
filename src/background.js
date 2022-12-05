@@ -1,21 +1,44 @@
 'use strict'
 
 
-// import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 const { app, protocol, BrowserWindow, dialog, ipcRenderer } = require('electron');
 const { createProtocol } = require('vue-cli-plugin-electron-builder/lib');
 const ipcMain = require('electron').ipcMain;
+const jsonfile = require('jsonfile');
 const path = require('path');
+const fs = require('fs');
 
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+const defaultSettings = {
+	allowedFolders: [],
+	dimensions: {
+		width: 1500,
+		height: 900
+	},
+};
+
+
+const getPathToSettings = async () => {
+	const pathToExecutable = app.getPath('exe');
+	const pathToSettings = path.dirname(pathToExecutable) + '\\settings.json';
+	const doSettingsExist = await fs.promises.stat(pathToSettings).then(() => true, () => false);
+	if (!doSettingsExist) {
+		jsonfile.writeFileSync(pathToSettings, defaultSettings);
+	};
+	return pathToSettings;
+};
+
 
 async function createWindow() {
 
+	const pathToSettings = await getPathToSettings();
+	const settings = jsonfile.readFileSync(pathToSettings);
+
 	var win = new BrowserWindow({
-		width: 1500,
-		height: 900,
+		width: settings.dimensions.width,
+		height: settings.dimensions.height,
 		frame: false,
 		webPreferences: {
 			contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
@@ -32,10 +55,9 @@ async function createWindow() {
 	ipcMain.handle('close', () => {win.webContents.closeDevTools(); win.close()});
 	ipcMain.handle('reload', (event, args) => win.webContents.reload());
 
-	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'));
+	ipcMain.handle('getPathToSettings', async () => pathToSettings);
 	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory', 'multiSelections']}));
 
-	ipcMain.handle('settingsHaveBeenUpdated', () => win.webContents.send('settingsHaveBeenUpdated', null));
 	ipcMain.handle('songStateHasBeenUpdated', (event, args) => win.webContents.send('songStateHasBeenUpdated', args));
 
 
@@ -74,7 +96,7 @@ protocol.registerSchemesAsPrivileged([
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
 	if (isDevelopment && !process.env.IS_TEST) {
-		// Install Vue Devtools
+		// Install Vue Devtools or smth
 	}
 	createWindow();
 });
