@@ -1,14 +1,33 @@
 <script setup>
 import { colorRangeSlider } from '@/utilities/utilities.js'
+import { ref, onMounted } from 'vue';
 import { Icon } from "@iconify/vue";
-import { onMounted } from 'vue';
+import { useStore } from 'vuex';
+
+
+const volume = ref(0.5);
+
+
+const store = useStore();
+
+store.subscribe((mutation, state) => {
+	if (mutation.type === 'UPDATE_SETTINGS') {
+		volume.value = mutation.payload.volume;
+		setTimeout(() => {
+			colorRangeSlider(document.getElementById("volume-bar"), isBeignHovered);
+		}, 10);
+	};
+});
 
 
 var isBeignHovered = false;
 
 onMounted(() => {
 	colorRangeSlider(document.getElementById("volume-bar"), isBeignHovered)
-	document.getElementById("volume-bar").oninput = function () {colorRangeSlider(this, isBeignHovered)};
+	document.getElementById("volume-bar").oninput = function () {
+		window.settings.setVolume(this.value);
+		colorRangeSlider(this, isBeignHovered);
+	};
 	document.getElementById("volume-bar").onmouseenter = function () {
 		isBeignHovered = !isBeignHovered;
 		colorRangeSlider(this, isBeignHovered);
@@ -26,12 +45,14 @@ onMounted(() => {
 <template>
 	<div class="flex-1 w-2/7 flex flex-row justify-end place-items-center text-2xl">
 
-		<Icon
-			id=""
-			class="mr-2 text-stone-300 hover:text-white"
-			icon="material-symbols:lyrics-outline"
-			:inline="true"
-		/>
+		<router-link to="/lyrics" id="LyricsViewLink">
+			<Icon
+				id=""
+				class="mr-2 text-stone-300 hover:text-white"
+				icon="material-symbols:lyrics-outline"
+				:inline="true"
+			/>
+		</router-link>
 
 		<Icon
 			id=""
@@ -42,14 +63,14 @@ onMounted(() => {
 
 		<input
 			id="volume-bar"
-			type="range" min="0" max="100" value="0" step="1"
+			type="range" min="0" max="1" :value="volume" step="0.05"
 			name="volume-bar"
 			class="mx-1 h-[4px] w-24"
 		/>
 
 		<router-link to="/theater" id="TheaterViewLink">
 			<Icon
-				class="ml-4 text-stone-300 hover:text-white"
+				class="ml-4 mr-5 text-stone-300 hover:text-white"
 				icon="mdi:arrow-expand"
 				:inline="true"
 			/>

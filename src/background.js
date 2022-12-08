@@ -17,6 +17,9 @@ const defaultSettings = {
 		width: 1500,
 		height: 900
 	},
+	volume: 0.25,
+	albumsView: true,
+	coverView: true
 };
 
 
@@ -24,9 +27,7 @@ const getPathToSettings = async () => {
 	const pathToExecutable = app.getPath('exe');
 	const pathToSettings = path.dirname(pathToExecutable) + '\\settings.json';
 	const doSettingsExist = await fs.promises.stat(pathToSettings).then(() => true, () => false);
-	if (!doSettingsExist) {
-		jsonfile.writeFileSync(pathToSettings, defaultSettings);
-	};
+	if (!doSettingsExist) jsonfile.writeFileSync(pathToSettings, defaultSettings);
 	return pathToSettings;
 };
 

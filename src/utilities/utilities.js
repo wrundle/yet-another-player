@@ -4,7 +4,7 @@ export const isObjectEmpty = (obj) => {
 };
 
 
-export const removeSpaces = str => str.split(' ').join('');
+export const removeSpaces = str => str ? str.split(' ').join('') : '';
 
 
 export const normalizeDuration = (durationInSeconds) => {

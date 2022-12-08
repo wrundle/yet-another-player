@@ -77,6 +77,9 @@ onMounted(() => {
 		setActive();
 		isPlaying.value = store.state.currentSongState.isPlaying;
 	};
+
+	if (!props.cover) return;
+
 	getImageSrcFromBuffer(props.cover, (event) => {
 		var image = document.getElementById(baseId + '-cover');
 		image.src = event.target.result;

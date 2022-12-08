@@ -1,7 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import TheaterView from '../views/TheaterView.vue';
+import LyricsView from '../views/LyricsView.vue';
 import SearchView from '../views/SearchView.vue';
 import MainView from '../views/MainView.vue';
+
 
 const routes = [
   {
@@ -18,6 +20,11 @@ const routes = [
     path: '/theater',
     name: 'theater',
     component: TheaterView
+  },
+  {
+    path: '/lyrics',
+    name: 'lyrics',
+    component: LyricsView
   },
 ]
 

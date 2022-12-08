@@ -20,15 +20,13 @@ const updateSongState = () => {
 };
 
 
-contextBridge.exposeInMainWorld('fileHandling', {
+contextBridge.exposeInMainWorld('folderHandling', {
 
 	addFolder: async () => {
 		const res = await ipcRenderer.invoke('selectFolder');
-		if (res.canceled) {
-			return;
-		};
+		if (res.canceled) return;
 		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
-		var settings = jsonfile.readFileSync(pathToSettings);
+		const settings = jsonfile.readFileSync(pathToSettings);
 		for (const iterator of res.filePaths) {
 			const pathToFolder = iterator + '\\';
 			if (!settings.allowedFolders.includes(pathToFolder)) {
@@ -67,7 +65,7 @@ contextBridge.exposeInMainWorld('fileHandling', {
 				// TODO: Utilize other cool tags like genre, disk.no, disk.of, track.of, etc.
 				duration:	tags.duration,
 				artists:	tags.artist,
-				cover: 		tags.picture[0].data,
+				cover: 		tags.picture.length ? tags.picture[0].data : null,
 				track:		tags.track,
 				album:		tags.album,
 				title:		tags.title,
@@ -84,11 +82,50 @@ contextBridge.exposeInMainWorld('fileHandling', {
 });
 
 
+contextBridge.exposeInMainWorld('settings', {
+
+	readSettings: new Promise(async (resolve, reject) => {
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
+		const settings = jsonfile.readFileSync(pathToSettings);
+		resolve(settings);
+	}),
+
+	setAlbumsView: async (param) => {
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
+		const settings = jsonfile.readFileSync(pathToSettings);
+		settings.albumsView = param;
+		jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
+	},
+
+	setVolume: async (param) => {
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
+		const settings = jsonfile.readFileSync(pathToSettings);
+		settings.volume = param;
+		jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
+	},
+
+	setСoverView: async (param) => {
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
+		const settings = jsonfile.readFileSync(pathToSettings);
+		settings.coverView = param;
+		jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
+	},
+
+});
+
+
 contextBridge.exposeInMainWorld('songControls', {
 
-	playSong: (pathToFile) => {
+	playSong: async (pathToFile) => {
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
+		const settings = jsonfile.readFileSync(pathToSettings);
 		if (!isObjectEmpty(howlerInstance)) howlerInstance.unload();
-		howlerInstance = new Howl({ src: [pathToFile], html5: true, volume: 0.25, onload: () => updateSongState() });
+		howlerInstance = new Howl({
+			src: [pathToFile],
+			html5: true,
+			volume: settings.volume,
+			onload: () => updateSongState()
+		});
 		howlerInstance.play();
 		updateSongState();
 	},

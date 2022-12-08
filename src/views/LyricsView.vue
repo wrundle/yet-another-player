@@ -1,8 +1,8 @@
 <script setup>
 // @ is an alias to /src
 import TheRightSidebar from '@/components/TheRightSidebar.vue';
-import TheMusicLibrary from '@/components/TheMusicLibrary.vue';
 import TheLeftSidebar from '@/components/TheLeftSidebar.vue';
+import TheSongLyrics from '@/components/TheSongLyrics.vue';
 import TheBottomBar from '@/components/TheBottomBar.vue';
 import LoadingMsg from '@/components/TheLoadingMsg.vue';
 import TheTopBar from '@/components/TheTopBar.vue';
@@ -22,7 +22,7 @@ import TheTopBar from '@/components/TheTopBar.vue';
 			<TheLeftSidebar />
 
 			<Suspense>
-				<template #default><TheMusicLibrary /></template>
+				<template #default><TheSongLyrics /></template>
 				<template #fallback><LoadingMsg /></template>
 			</Suspense>
 

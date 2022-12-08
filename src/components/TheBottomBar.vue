@@ -7,11 +7,11 @@ import SongInfo from '@/components/BottomBar/SongInfo.vue';
 
 
 <template>
-	<div class="flex-initial flex flex-row dark:bg-stone-900 px-5 py-5 border-t dark:border-t-stone-700">
+	<div class="flex-initial flex flex-row dark:bg-stone-900 border-t dark:border-t-stone-700">
 
 		<SongInfo />
 
-		<div class="flex-auto w-3/7 flex flex-col place-content-center">
+		<div class="flex-auto w-3/7 py-5 flex flex-col place-content-center">
 
 			<ControlButtons />
 

@@ -1,31 +1,37 @@
 <script setup>
+import AlbumThumbnail from '@/components/MusicLibrary/AlbumThumbnail.vue';
 import AlbumDetails from '@/components/MusicLibrary/AlbumDetails.vue';
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
 import { ref } from "vue";
 
 
+const selectFolder = event => {if (event) {window.folderHandling.addFolder()}};
+
+
 const store = useStore();
 
-const view = ref(true);
+await store.dispatch('fetchSongs');
+const songsByAlbum = ref(store.state.songsByAlbum);
+const albums = ref(store.state.albums);
 
+await store.dispatch('fetchSettings');
+const albumsView = ref(store.state.settings.albumsView);
 
-const selectFolder = (event) => {if (event) {window.fileHandling.addFolder()}};
-
-function setView(param) {
-	view.value = param;
+function setAlbumsView(param) {
+	window.settings.setAlbumsView(param);
+	albumsView.value = param;
 };
 
 
-await store.dispatch('fetchSongs');
-
-const songsByAlbum = ref(store.state.songsByAlbum);
-const albums = ref(store.state.albums);
+function openSettings() {
+	store.dispatch('setModal', 1);
+}
 </script>
 
 
 <template>
-	<div class="main flex-grow w-4/6 flex flex-col max-h-full overflow-auto select-none">
+	<div class="music-library flex-grow w-4/6 flex flex-col max-h-full overflow-auto select-none">
 
 		<div class="flex flex-row justify-between px-3">
 
@@ -52,7 +58,7 @@ const albums = ref(store.state.albums);
 				</span>
 
 				<button
-					@click="setView(true)"
+					@click="setAlbumsView(true)"
 					class="
 						p-2 text-xl
 						dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white rounded-full
@@ -62,7 +68,7 @@ const albums = ref(store.state.albums);
 				</button>
 
 				<button
-					@click="setView(false)"
+					@click="setAlbumsView(false)"
 					class="
 						p-2 text-xl
 						dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white rounded-full
@@ -72,7 +78,7 @@ const albums = ref(store.state.albums);
 				</button>
 
 				<button
-					@click=""
+					@click="openSettings"
 					class="
 						p-1 text-2xl
 						dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white rounded-full
@@ -85,9 +91,17 @@ const albums = ref(store.state.albums);
 
 		</div>
 
-		<div v-if="view" class="flex-auto">
+		<div v-if="albumsView" class="flex-auto">
 			<div v-for="(album, index) in albums">
 				<AlbumDetails :songs="songsByAlbum[albums[index]]" />
+			</div>
+		</div>
+
+		<div v-else class="flex-auto">
+			<div class="grid grid-cols-4">
+				<div v-for="(album, index) in albums">
+					<AlbumThumbnail :songs="songsByAlbum[albums[index]]" />
+				</div>
 			</div>
 		</div>
 
@@ -96,19 +110,19 @@ const albums = ref(store.state.albums);
 
 
 <style scoped>
-.main {
+.music-library {
 	overflow-y: overlay;
 }
 
-.main::-webkit-scrollbar {
+.music-library::-webkit-scrollbar {
     width: 10px;
 }
 
-.main::-webkit-scrollbar-thumb {
+.music-library::-webkit-scrollbar-thumb {
 	background: rgba(255, 255, 255, 0.2);
 }
 
-.main::-webkit-scrollbar-thumb:hover {
+.music-library::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
 }
 </style>

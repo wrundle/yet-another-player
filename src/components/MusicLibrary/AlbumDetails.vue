@@ -6,12 +6,12 @@ import { useStore } from 'vuex';
 import Song from './Song.vue';
 
 
-const props = defineProps({ songs: Array })
+const props = defineProps({ songs: Array });
 
 
 const store = useStore();
 
-const baseId = removeSpaces(props.songs[0].artists[0]) + removeSpaces(props.songs[0].album);
+const baseId = removeSpaces(props.songs[0].artists[0]) + removeSpaces(props.songs[0].album) + 'AlbumDetails';
 
 
 // const playBtnClick = function (event) {
@@ -25,6 +25,8 @@ const baseId = removeSpaces(props.songs[0].artists[0]) + removeSpaces(props.song
 
 
 onMounted(() => {
+	if (!props.songs[0].cover) return;
+
 	getImageSrcFromBuffer(props.songs[0].cover, (event) => {
 		var image = document.getElementById(baseId + '-cover');
 		image.src = event.target.result;

@@ -3,7 +3,7 @@
 import TheRightSidebar from '@/components/TheRightSidebar.vue';
 import TheLeftSidebar from '@/components/TheLeftSidebar.vue';
 import TheBottomBar from '@/components/TheBottomBar.vue';
-import LoadingMsg from '@/components/LoadingMsg.vue';
+import LoadingMsg from '@/components/TheLoadingMsg.vue';
 import TheTopBar from '@/components/TheTopBar.vue';
 </script>
 

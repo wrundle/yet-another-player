@@ -5,26 +5,33 @@ import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
 
 
+const setCoverView = function (param) {
+	store.dispatch('setCoverView', param);
+}
+
 const store = useStore();
 
 const init = () => {
-	if (isObjectEmpty(store.state.currentSong)) {
-		return;
-	};
+	if (isObjectEmpty(store.state.currentSong) || !store.state.currentSong.cover || !store.state.settings.coverView) return;
+
 	getImageSrcFromBuffer(store.state.currentSong.cover, (event) => {
 		var image = document.getElementById('left-sidebar-img');
 		image.src = event.target.result;
 		Vibrant.from(event.target.result).getPalette()
 			.then((result) => {
 				const rgb = result.Vibrant.rgb
-				image.style.boxShadow = `0px 0px 10px 10px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.8)`
+				// image.style.boxShadow = `0px 0px 10px 10px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.8)`
 			});
 	});
 };
 
 init();
 
-store.subscribe((mutation, state) => mutation.type === 'UPDATE_CURRENT_SONG' ? init() : {});
+store.subscribe((mutation, state) => {
+	if (mutation.type === 'UPDATE_CURRENT_SONG' || mutation.type === 'UPDATE_COVER_VIEW') {
+		init();
+	};
+});
 </script>
 
 
@@ -95,18 +102,28 @@ store.subscribe((mutation, state) => mutation.type === 'UPDATE_CURRENT_SONG' ? i
 
 		</div>
 
-		<div id="left-sidebar-img-wrapper" class="flex-initial max-w-fill aspect-square object-cover relative">
-			<img id="left-sidebar-img" class="w-max aspect-square object-cover" />
-			<button
-				id="left-sidebar-img-btn"
-				class="
-					absolute top-0 right-0 mr-2 mt-2 text-2xl rounded-full
-					hover:scale-110 hover:text-white transition duration-100
-				"
+		<Transition name="slide-fade">
+			<div
+				v-if="store.state.settings.coverView"
+				id="left-sidebar-img-wrapper"
+				class="flex-initial max-w-fill aspect-square object-cover relative"
 			>
-				<Icon icon="material-symbols:keyboard-arrow-down-rounded" />
-			</button>
-		</div>
+
+				<img id="left-sidebar-img" class="w-max aspect-square object-cover" />
+
+				<button
+					@click="setCoverView(false)"
+					id="left-sidebar-img-btn"
+					class="
+						absolute top-0 right-0 mr-2 mt-2 text-2xl rounded-full
+						hover:scale-110 hover:text-white transition duration-100
+					"
+				>
+					<Icon icon="material-symbols:keyboard-arrow-down-rounded" />
+				</button>
+
+			</div>
+		</Transition>
 
 	</div>
 </template>
@@ -114,7 +131,7 @@ store.subscribe((mutation, state) => mutation.type === 'UPDATE_CURRENT_SONG' ? i
 
 <style scoped>
 #left-sidebar-img-wrapper {
-	box-shadow: 0px 0px 20px 5px rgba(255, 255, 255, 0.3);
+	/* box-shadow: 0px 0px 20px 5px rgba(255, 255, 255, 0.3); */
 	/* -webkit-transition : all ease-in-out 5s;
 	transition : all ease-in-out 5s; */
 }
@@ -127,7 +144,22 @@ store.subscribe((mutation, state) => mutation.type === 'UPDATE_CURRENT_SONG' ? i
 	opacity: 0;
 	background: rgba(0, 0, 0, 0.7);
 }
+
 #left-sidebar-img-btn:hover {
 	background: rgba(0, 0, 0, 0.8);
+}
+
+.slide-fade-enter-active {
+  transition: all 0.6s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.6s ease-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(100%);
+  /* opacity: 0; */
 }
 </style>
