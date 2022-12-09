@@ -23,7 +23,7 @@ lyrics.value = response.data;
 
 
 <template>
-	<pre class="lyrics flex-grow w-4/6 max-h-full overflow-auto">
+	<pre class="lyrics flex-grow w-4/6 max-h-full p-10 overflow-auto leading-relaxed text-xl">
 		{{ lyrics }}
 	</pre>
 </template>

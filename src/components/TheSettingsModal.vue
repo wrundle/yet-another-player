@@ -12,13 +12,13 @@ function close() {
 
 
 function changeSmth(event) {
-	console.log(event.target.checked);
+	window.settings.setSearchOnTheInternet(event.target.checked);
 };
 </script>
 
 
 <template>
-	<div class="absolute w-full h-full flex justify-center items-center backdrop-blur-sm text-white">
+	<div class="absolute z-50 w-full h-full flex justify-center items-center backdrop-blur-sm text-white">
 
 		<div class="w-3/4 border-2 border-neutral-400 bg-stone-800">
 
@@ -37,6 +37,7 @@ function changeSmth(event) {
 
 					<div class="flex items-center mb-1">
 						<input
+							:checked="store.state.settings.searchOnTheInternet"
 							type="checkbox"
 							@click="changeSmth"
 							class="w-4 h-4 focus:ring-0 border-gray-300 dark:border-gray-600"
@@ -49,9 +50,10 @@ function changeSmth(event) {
 					<div class="flex items-center mb-1">
 						<input
 							disabled
+							checked
 							type="checkbox"
 							@click=""
-							class="w-4 h-4 focus:ring-0 border-gray-300 dark:border-gray-600"
+							class="w-4 h-4 focus:ring-0 border-gray-300 dark:border-gray-600 cursor-not-allowed"
 						>
 						<label for="default-checkbox" class="ml-3 font-medium dark:text-stone-400">
 							Искать текст песни в интернете

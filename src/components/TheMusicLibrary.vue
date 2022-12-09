@@ -98,7 +98,7 @@ function openSettings() {
 		</div>
 
 		<div v-else class="flex-auto">
-			<div class="grid grid-cols-4">
+			<div class="album-thumbnails grid grid-cols-4 pt-6 px-3">
 				<div v-for="(album, index) in albums">
 					<AlbumThumbnail :songs="songsByAlbum[albums[index]]" />
 				</div>
@@ -124,5 +124,9 @@ function openSettings() {
 
 .music-library::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
+}
+
+.album-thumbnails {
+	background: linear-gradient(to bottom, #231f1d 0%, transparent 50%);
 }
 </style>

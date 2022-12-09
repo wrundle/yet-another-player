@@ -22,12 +22,25 @@ onMounted(() => {
 
 
 <template>
-	<div>
+	<div class="
+		p-4 mx-3 mb-3 rounded-md shadow-md flex flex-col place-items-center
+		shadow-black/50 bg-stone-900 hover:bg-stone-800 transition-all duration-500
+	">
+
 		<img
 			:id="baseId + '-cover'"
-			class="flex-initial mr-5 aspect-square w-36 object-fill"
+			class="flex-initial w-max mb-3 aspect-square object-fill rounded-md"
 			:src="require('@/assets/placeholder.jpg')"
 		/>
+
+		<div class="mb-3 w-full flex-initial font-semibold text-sm">{{ props.songs[0].album }}</div>
+
+		<div class="w-full text-sm dark:text-stone-300">
+			<span>{{ props.songs[0].year }}</span>
+			<Icon class="inline mx-1" icon="bi:dot" />
+			<span>Album</span>
+		</div>
+
 	</div>
 </template>
 

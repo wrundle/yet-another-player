@@ -20,7 +20,7 @@ const init = () => {
 		Vibrant.from(event.target.result).getPalette()
 			.then((result) => {
 				const rgb = result.Vibrant.rgb
-				// image.style.boxShadow = `0px 0px 10px 10px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.8)`
+				image.style.boxShadow = `0px 0px 10px 10px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.8)`
 			});
 	});
 };
@@ -131,7 +131,7 @@ store.subscribe((mutation, state) => {
 
 <style scoped>
 #left-sidebar-img-wrapper {
-	/* box-shadow: 0px 0px 20px 5px rgba(255, 255, 255, 0.3); */
+	box-shadow: 0px 0px 20px 5px rgba(255, 255, 255, 0.3);
 	/* -webkit-transition : all ease-in-out 5s;
 	transition : all ease-in-out 5s; */
 }

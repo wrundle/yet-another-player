@@ -19,7 +19,8 @@ const defaultSettings = {
 	},
 	volume: 0.25,
 	albumsView: true,
-	coverView: true
+	coverView: true,
+	searchOnTheInternet: false
 };
 
 
@@ -57,6 +58,7 @@ async function createWindow() {
 	ipcMain.handle('reload', (event, args) => win.webContents.reload());
 
 	ipcMain.handle('getPathToSettings', async () => pathToSettings);
+	ipcMain.handle('getPathToExecutable', async () => app.getPath('exe'));
 	ipcMain.handle('selectFolder', async () => dialog.showOpenDialog({properties: ['openDirectory', 'multiSelections']}));
 
 	ipcMain.handle('songStateHasBeenUpdated', (event, args) => win.webContents.send('songStateHasBeenUpdated', args));

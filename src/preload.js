@@ -8,11 +8,73 @@ const path = require('path');
 const fs = require('fs');
 
 
+import axios, {isCancel, AxiosError} from 'axios';
+
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 const YandexMusicApi = new YMApi();
 
 var howlerInstance = new Object();
+
+
+function toDataUrl(url, callback) {
+	var xhr = new XMLHttpRequest();
+	xhr.onload = function () {
+		var reader = new FileReader();
+		reader.onloadend = function () {
+			callback(reader.result);
+		}
+		reader.readAsDataURL(xhr.response);
+	};
+	xhr.open('GET', url);
+	xhr.responseType = 'blob';
+	xhr.send();
+};
+
+
+var APICallCount = 0;
+const getImgFromAPI = async (tags) => {
+	if (!(tags.album && tags.picture.length && tags.year) && (tags.artist.length && tags.title)) {
+		console.log(`Problem with "${tags.artist[0]}" by "${tags.title}"`);
+		console.log(`Missing tags: ${tags.album ? '' : '<album>'} ${tags.picture.length ? '' : '<picture>'} ${tags.year ? '' : '<year>'}`);
+
+		const pathToExecutable = await ipcRenderer.invoke('getPathToExecutable');
+		const pathToTemp = path.dirname(pathToExecutable) + '\\temp.json';
+		const doesTempExists = await fs.promises.stat(pathToTemp).then(() => true, () => false);
+		if (!doesTempExists) jsonfile.writeFileSync(pathToTemp, {});
+
+		const temp = jsonfile.readFileSync(pathToTemp);
+
+		if (`${tags.artist[0]} ${tags.title}` in temp) {
+			console.log('Found url in temp!');
+			console.log(
+				"%c ",
+				"display: inline-block ; background-image: url( 'https://bennadel.github.io/JavaScript-Demos/demos/console-log-css/rock.png' ) ; " +
+				"background-size: cover ; padding: 10px 175px 158px 10px ; " +
+				"border: 2px solid black ; font-size: 11px ; line-height: 11px ; " +
+				"font-family: monospace ;"
+			);
+			return temp[`${tags.artist[0]} ${tags.title}`];
+		};
+
+		if (tags.album) {
+			APICallCount++;
+			console.log(`%cCalling the API for the ${APICallCount}~th time`, 'background: red');
+			const response = await axios({
+				method: 'GET',
+				baseURL: 'https://yet-another-player-lyrics-api.vercel.app/',
+				url: 'info',
+				params: {
+					'title': tags.artist[0] + ' ' + tags.title
+				}
+			});
+			temp[`${tags.artist[0]} ${tags.title}`] = response.data.song_art_image_url;
+			jsonfile.writeFileSync(pathToTemp, temp, {spaces: 4});
+			return response.data.song_art_image_url;
+		};
+	};
+};
 
 
 const updateSongState = () => {
@@ -61,11 +123,19 @@ contextBridge.exposeInMainWorld('folderHandling', {
 			});
 			// TODO: Comment this atrocity
 			await new Promise((resolve, reject) => readableStream.on('close', () => resolve()));
+
+			var imgFromAPI = null;
+			if (settings.searchOnTheInternet && !tags.picture.length) {
+				const response = await axios.get(await getImgFromAPI(tags),  { responseType: 'arraybuffer' });
+				const buffer = Buffer.from(response.data, "utf-8");
+				imgFromAPI = buffer;
+			};
+
 			const song = {
 				// TODO: Utilize other cool tags like genre, disk.no, disk.of, track.of, etc.
 				duration:	tags.duration,
 				artists:	tags.artist,
-				cover: 		tags.picture.length ? tags.picture[0].data : null,
+				cover: 		tags.picture.length ? tags.picture[0].data : imgFromAPI,
 				track:		tags.track,
 				album:		tags.album,
 				title:		tags.title,
@@ -111,6 +181,13 @@ contextBridge.exposeInMainWorld('settings', {
 		jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
 	},
 
+	setSearchOnTheInternet: async (param) => {
+		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
+		const settings = jsonfile.readFileSync(pathToSettings);
+		settings.searchOnTheInternet = param;
+		jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
+	},
+
 });
 
 
@@ -151,11 +228,12 @@ contextBridge.exposeInMainWorld('windowControls', {
 });
 
 
-(async () => {
-	try {
-		// const result = await YandexMusicApi.searchTracks("дао");
-		// const tracks = result.tracks.results;
-	} catch (e) {
-		console.log(`api error ${e.message}`);
-	};
-})();
+// (async () => {
+// 	try {
+// 		const result = await YandexMusicApi.search("Numenorean Adore");
+// 		// const tracks = result.tracks.results;
+// 		console.log(result);
+// 	} catch (e) {
+// 		console.log(`api error ${e.message}`);
+// 	};
+// })();
