@@ -17,19 +17,9 @@ window.songControls.songStateHasBeenUpdated((event, args) => {
 });
 </script>
 
-
 <template>
-	<div class="app relative">
+	<div class="relative">
 		<TheSettingsModal v-if="store.state.modal" />
 		<router-view />
 	</div>
 </template>
-
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
-
-.app {
-	font-family: 'IBM Plex Mono', monospace;
-}
-</style>

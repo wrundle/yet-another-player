@@ -3,7 +3,6 @@ import { normalizeDuration, colorRangeSlider } from '@/utilities/utilities.js'
 import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
-
 const isLoading = ref(false);
 const isPlaying = ref(false);
 
@@ -28,7 +27,6 @@ store.subscribe((mutation, state) => {
 	};
 });
 
-
 setInterval(() => {
 	if (!isPlaying.value) {
 		return;
@@ -39,7 +37,6 @@ setInterval(() => {
 	document.getElementById("progress-bar").value = percentage;
 	colorRangeSlider(document.getElementById("progress-bar"));
 }, 1000);
-
 
 var isBeignHovered = false;
 
@@ -59,36 +56,45 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
 	<div class="flex-auto flex flex-row dark:text-stone-300">
 
 		<div class="flex-auto select-none">
-			<span class="text-xs">{{ elapsedTimeString }}</span>
+			<span class="text-xs">
+				{{ elapsedTimeString }}
+			</span>
 		</div>
 
 		<div class="flex-auto w-full mx-2">
 			<input
 				id="progress-bar"
-				type="range" min="0" max="100" value="0" step="1"
+
+				type="range"
 				name="progress-bar"
+
+				min="0"
+				max="100"
+				value="0"
+				step="1"
+
 				class="h-[4px] w-full"
 			/>
 		</div>
 
 		<div class="flex-auto select-none">
-			<span class="text-xs">{{ songDurationString }}</span>
+			<span class="text-xs">
+				{{ songDurationString }}
+			</span>
 		</div>
 
 	</div>
 </template>
 
-
 <style scoped>
 #progress-bar {
+	outline: none;
 	appearance: none;
 	border-radius: 8px;
-	outline: none;
 	transition: background 450ms ease-in;
 	--thumb-visibility: hidden;
 }
@@ -99,10 +105,10 @@ onMounted(() => {
 	/* Dynamic value */
 	visibility: var(--thumb-visibility);
 
+	width: 11px;
+	height: 11px;
 	appearance: none;
 	border-radius: 10px;
-	height: 11px;
-	width: 11px;
 	background: #FFF;
 }
 </style>

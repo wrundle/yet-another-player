@@ -1,9 +1,7 @@
 import { createStore } from 'vuex';
 import { reactive } from 'vue'
 
-
 export default reactive(createStore({
-
 	state: {
 		songs: new Array(),
 		albums: new Array(),
@@ -26,11 +24,9 @@ export default reactive(createStore({
 		modal: 0
 	},
 
-
 	getters: {
 
 	},
-
 
 	mutations: {
 		UPDATE_SONGS(state, payload) {
@@ -69,7 +65,6 @@ export default reactive(createStore({
 			state.modal = payload;
 		},
 	},
-
 
 	actions: {
 		async fetchSongs(context) {
@@ -142,9 +137,7 @@ export default reactive(createStore({
 		},
 	},
 
-
 	modules: {
 
 	}
-
 }));

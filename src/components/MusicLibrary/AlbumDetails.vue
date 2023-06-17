@@ -5,14 +5,13 @@ import { onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Song from './Song.vue';
 
-
-const props = defineProps({ songs: Array });
-
+const props = defineProps({
+	songs: Array,
+});
 
 const store = useStore();
 
 const baseId = removeSpaces(props.songs[0].artists[0]) + removeSpaces(props.songs[0].album) + 'AlbumDetails';
-
 
 // const playBtnClick = function (event) {
 // 	if (event) {
@@ -22,7 +21,6 @@ const baseId = removeSpaces(props.songs[0].artists[0]) + removeSpaces(props.song
 // 		store.dispatch('setCurrentPlaylist', payload);
 // 	};
 // };
-
 
 onMounted(() => {
 	if (!props.songs[0].cover) return;
@@ -34,7 +32,6 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
 	<div
 		class="
@@ -44,33 +41,45 @@ onMounted(() => {
 			select-none
 		"
 	>
-
 		<div class="flex-auto flex pb-5 pt-10">
-
 			<img
 				:id="baseId + '-cover'"
-				class="flex-initial mr-5 aspect-square w-36 object-fill"
 				:src="require('@/assets/placeholder.jpg')"
+				class="flex-initial mr-5 aspect-square w-36 object-fill"
 			/>
 
 			<div class="flex-auto flex flex-col py-2">
-
-				<div class="flex-initial text-2xl text-white font-extrabold mb-3">{{ props.songs[0].album }}</div>
+				<div class="flex-initial text-2xl text-white font-extrabold mb-3">
+					{{ props.songs[0].album }}
+				</div>
 
 				<div class="flex-initial text-sm dark:text-stone-300">
+					<span>
+						Album
+					</span>
 
-					<span>Album</span>
-					<Icon class="inline mx-1" icon="bi:dot" />
-					<span>{{ props.songs[0].year }}</span>
-					<Icon class="inline mx-1" icon="bi:dot" />
-					<span>{{ props.songs.length }} {{ props.songs.length > 1 ? "songs" : "song"}}</span>
+					<Icon
+						icon="bi:dot"
+						class="inline mx-1"
+					/>
 
+					<span>
+						{{ props.songs[0].year }}
+					</span>
+
+					<Icon
+						icon="bi:dot"
+						class="inline mx-1"
+					/>
+
+					<span>
+						{{ props.songs.length }} {{ props.songs.length > 1 ? "songs" : "song"}}
+					</span>
 				</div>
 
 				<div class="flex-grow"></div>
 
 				<div class="flex-initial flex place-items-center text-2xl">
-
 					<Icon
 						icon="bi:play-circle-fill"
 						@click=""
@@ -86,11 +95,8 @@ onMounted(() => {
 						icon="bi:three-dots"
 						class="mr-3 text-stone-300 hover:text-white"
 					/>
-
 				</div>
-
 			</div>
-
 		</div>
 
 		<div
@@ -101,7 +107,6 @@ onMounted(() => {
 				border-b border-stone-600
 			"
 		>
-
 			<span class="w-7 mr-4 flex-initial flex place-items-center text-lg justify-end">
 				#
 			</span>
@@ -120,28 +125,38 @@ onMounted(() => {
 			</span>
 
 			<span class="mr-8 flex-initial flex place-items-center invisible text-base">
-				<Icon icon="bi:suit-heart" :inline="true" />
+				<Icon
+					icon="bi:suit-heart"
+					:inline="true"
+				/>
 			</span>
 
 			<span class="mr-3 w-20 justify-center text-base flex-initial flex place-items-center">
-				<Icon class="dark:hover:text-white" icon="mdi:clock-time-three-outline" :inline="true" />
+				<Icon
+					icon="mdi:clock-time-three-outline"
+					:inline="true"
+					class="dark:hover:text-white"
+				/>
 			</span>
 
 			<span class="flex-initial flex place-items-center invisible">
-				<Icon icon="bi:three-dots" :inline="true" />
+				<Icon
+					icon="bi:three-dots"
+					:inline="true"
+				/>
 			</span>
-
 		</div>
 
 		<div class="flex-auto flex flex-col">
-			<div v-for="song in props.songs" :key="song.id">
+			<div
+				v-for="song in props.songs"
+				:key="song.id"
+			>
 				<Song v-bind="song" />
 			</div>
 		</div>
-
 	</div>
 </template>
-
 
 <style scoped>
 .album {

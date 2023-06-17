@@ -3,11 +3,9 @@ import axios, {isCancel, AxiosError} from 'axios';
 import { useStore } from 'vuex';
 import { ref } from 'vue';
 
-
-const lyrics = ref('')
-
 const store = useStore();
 
+const lyrics = ref('')
 
 const response = await axios({
 	method: 'GET',
@@ -21,13 +19,9 @@ const response = await axios({
 lyrics.value = response.data;
 </script>
 
-
 <template>
-	<pre class="lyrics flex-grow w-4/6 max-h-full p-10 overflow-auto leading-relaxed text-xl">
-		{{ lyrics }}
-	</pre>
+	<pre class="lyrics flex-grow w-4/6 max-h-full p-10 overflow-auto leading-relaxed text-xl">{{ lyrics }}</pre>
 </template>
-
 
 <style scoped>
 .lyrics {

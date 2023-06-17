@@ -4,11 +4,10 @@ import { ref, onMounted } from 'vue';
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
 
+const store = useStore();
 
 const volume = ref(0.5);
-
-
-const store = useStore();
+var isBeignHovered = false;
 
 store.subscribe((mutation, state) => {
 	if (mutation.type === 'UPDATE_SETTINGS') {
@@ -18,9 +17,6 @@ store.subscribe((mutation, state) => {
 		}, 10);
 	};
 });
-
-
-var isBeignHovered = false;
 
 onMounted(() => {
 	colorRangeSlider(document.getElementById("volume-bar"), isBeignHovered)
@@ -40,7 +36,6 @@ onMounted(() => {
 	};
 });
 </script>
-
 
 <template>
 	<div class="flex-1 w-2/7 flex flex-row justify-end place-items-center text-2xl">
@@ -78,7 +73,6 @@ onMounted(() => {
 
 	</div>
 </template>
-
 
 <style scoped>
 #volume-bar {

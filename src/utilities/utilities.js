@@ -3,16 +3,13 @@ export const isObjectEmpty = (obj) => {
 	return true;
 };
 
-
 export const removeSpaces = str => str ? str.split(' ').join('') : '';
-
 
 export const normalizeDuration = (durationInSeconds) => {
 	const minutes = '' + Math.floor(durationInSeconds / 60);
 	const seconds = '' + (durationInSeconds - minutes * 60);
 	return `${minutes}:${seconds.length > 1 ? seconds : '0' + seconds}`;
 };
-
 
 export const getImageSrcFromBuffer = (arrayBuffer, onLoadCallback) => {
 	const bytes = new Uint8Array(arrayBuffer);
@@ -21,7 +18,6 @@ export const getImageSrcFromBuffer = (arrayBuffer, onLoadCallback) => {
 	reader.onload = onLoadCallback;
 	reader.readAsDataURL(blob);
 };
-
 
 export const colorRangeSlider = (slider, isBeignHovered) => {
 	const color = isBeignHovered ? '#1DB954' : '#FFF';

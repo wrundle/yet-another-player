@@ -1,6 +1,5 @@
 'use strict'
 
-
 const { app, protocol, BrowserWindow, dialog, ipcRenderer } = require('electron');
 const { createProtocol } = require('vue-cli-plugin-electron-builder/lib');
 const ipcMain = require('electron').ipcMain;
@@ -8,21 +7,21 @@ const jsonfile = require('jsonfile');
 const path = require('path');
 const fs = require('fs');
 
-
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const defaultSettings = {
-	allowedFolders: [],
+	coverView: true,
+	albumsView: true,
+	searchOnTheInternet: false,
+
+	volume: 0.25,
+
 	dimensions: {
 		width: 1500,
 		height: 900
 	},
-	volume: 0.25,
-	albumsView: true,
-	coverView: true,
-	searchOnTheInternet: false
+	allowedFolders: [],
 };
-
 
 const getPathToSettings = async () => {
 	const pathToExecutable = app.getPath('exe');
@@ -32,9 +31,7 @@ const getPathToSettings = async () => {
 	return pathToSettings;
 };
 
-
 async function createWindow() {
-
 	const pathToSettings = await getPathToSettings();
 	const settings = jsonfile.readFileSync(pathToSettings);
 
@@ -51,7 +48,6 @@ async function createWindow() {
 		}
 	});
 
-
 	ipcMain.handle('minimize', () => win.minimize());
 	ipcMain.handle('maximize', () => win.isMaximized() ? win.unmaximize() : win.maximize());
 	ipcMain.handle('close', () => {win.webContents.closeDevTools(); win.close()});
@@ -63,7 +59,6 @@ async function createWindow() {
 
 	ipcMain.handle('songStateHasBeenUpdated', (event, args) => win.webContents.send('songStateHasBeenUpdated', args));
 
-
 	if (process.env.WEBPACK_DEV_SERVER_URL) {
 		// Load the url of the dev server if in development mode
 		await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
@@ -73,7 +68,6 @@ async function createWindow() {
 		win.loadURL('app://./index.html');
 	};
 
-
 	// Emitted when the window is closed.
 	win.on('closed', function () {
 		// Dereference the window object
@@ -82,17 +76,13 @@ async function createWindow() {
 		win = null;
 	});
 
-
 	isDevelopment && !process.env.IS_TEST ? win.webContents.openDevTools() : {};
-
 };
-
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
 	{ scheme: 'app', privileges: { secure: true, standard: true } }
 ]);
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -104,7 +94,6 @@ app.on('ready', async () => {
 	createWindow();
 });
 
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
 	// On macOS it is common for applications and their menu bar
@@ -114,13 +103,11 @@ app.on('window-all-closed', () => {
 	};
 });
 
-
 app.on('activate', () => {
 	// On macOS it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
-
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

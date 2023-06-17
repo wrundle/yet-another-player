@@ -4,12 +4,11 @@ import * as Vibrant from 'node-vibrant';
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
 
+const store = useStore();
 
 const setCoverView = function (param) {
 	store.dispatch('setCoverView', param);
 }
-
-const store = useStore();
 
 const init = () => {
 	if (isObjectEmpty(store.state.currentSong) || !store.state.currentSong.cover || !store.state.settings.coverView) return;
@@ -25,64 +24,85 @@ const init = () => {
 	});
 };
 
-init();
-
 store.subscribe((mutation, state) => {
 	if (mutation.type === 'UPDATE_CURRENT_SONG' || mutation.type === 'UPDATE_COVER_VIEW') {
 		init();
 	};
 });
+
+init();
 </script>
 
-
 <template>
-	<div class="
-		flex-initial flex flex-col w-1/6 max-h-full overflow-hidden select-none
-		dark:text-stone-400 border-r dark:border-r-stone-800 bg-gradient-to-t dark:from-black
-	">
-
+	<div
+		class="
+			flex-initial flex flex-col w-1/6 max-h-full overflow-hidden select-none
+			dark:text-stone-400 border-r dark:border-r-stone-800 bg-gradient-to-t dark:from-black
+		"
+	>
 		<div class="flex-grow mt-4 max-h-full overflow-hidden">
-
 			<div class="pb-4 border-b dark:border-stone-700">
-
-				<router-link to="/" id="MainViewLink">
-					<span class="
-						flex place-items-center px-2 py-2 text-sm font-bold
-						transition-colors ease-in-out duration-300
-						dark:hover:text-white
-					">
-						<Icon icon="mdi:home" class="mx-3 text-2xl" />
+				<router-link
+					to="/"
+					id="MainViewLink"
+				>
+					<span
+						class="
+							flex place-items-center px-2 py-2 text-sm font-bold
+							transition-colors ease-in-out duration-300
+							dark:hover:text-white
+						"
+					>
+						<Icon
+							icon="mdi:home"
+							class="mx-3 text-2xl"
+						/>
 						Локальные Файлы
 					</span>
 				</router-link>
 
-				<router-link to="/search" id="SearchViewLink">
-					<span class="
-						flex place-items-center px-2 py-2 text-sm font-bold
-						transition-colors ease-in-out duration-300
-						dark:hover:text-white
-					">
-						<Icon icon="mdi:magnify" class="mx-3 text-2xl" />
+				<router-link
+					to="/search"
+					id="SearchViewLink"
+				>
+					<span
+						class="
+							flex place-items-center px-2 py-2 text-sm font-bold
+							transition-colors ease-in-out duration-300
+							dark:hover:text-white
+						"
+					>
+						<Icon
+							icon="mdi:magnify"
+							class="mx-3 text-2xl"
+						/>
 						Поиск
 					</span>
 				</router-link>
 
 				<div class="h-5"></div>
 
-				<span class="
-					flex place-items-center px-2 py-2 text-sm font-bold
-					transition-colors ease-in-out duration-300
-					dark:hover:text-white cursor-pointer
-				">
-					<Icon icon="mdi:plus-box" class="mx-3 text-2xl" />
+				<span
+					class="
+						flex place-items-center px-2 py-2 text-sm font-bold
+						transition-colors ease-in-out duration-300
+						dark:hover:text-white cursor-pointer
+					"
+				>
+					<Icon
+						icon="mdi:plus-box"
+						class="mx-3 text-2xl"
+					/>
 					Создать плейлист
 				</span>
 
-				<span class="
-					flex place-items-center px-2 py-2 text-sm font-bold
-					transition-colors ease-in-out duration-300
-					dark:hover:text-white cursor-pointer
-				">
+				<span
+					class="
+						flex place-items-center px-2 py-2 text-sm font-bold
+						transition-colors ease-in-out duration-300
+						dark:hover:text-white cursor-pointer
+					"
+				>
 					<Icon
 						icon="material-symbols:favorite"
 						class="
@@ -99,7 +119,6 @@ store.subscribe((mutation, state) => {
 				<div class="py-1">Плейлист #1</div>
 				<div class="py-1">Плейлист #2</div>
 			</div>
-
 		</div>
 
 		<Transition name="slide-fade">
@@ -108,26 +127,25 @@ store.subscribe((mutation, state) => {
 				id="left-sidebar-img-wrapper"
 				class="flex-initial max-w-fill aspect-square object-cover relative"
 			>
-
-				<img id="left-sidebar-img" class="w-max aspect-square object-cover" />
+				<img
+					id="left-sidebar-img"
+					class="w-max aspect-square object-cover"
+				/>
 
 				<button
-					@click="setCoverView(false)"
 					id="left-sidebar-img-btn"
 					class="
 						absolute top-0 right-0 mr-2 mt-2 text-2xl rounded-full
 						hover:scale-110 hover:text-white transition duration-100
 					"
+					@click="setCoverView(false)"
 				>
 					<Icon icon="material-symbols:keyboard-arrow-down-rounded" />
 				</button>
-
 			</div>
 		</Transition>
-
 	</div>
 </template>
-
 
 <style scoped>
 #left-sidebar-img-wrapper {
@@ -150,16 +168,16 @@ store.subscribe((mutation, state) => {
 }
 
 .slide-fade-enter-active {
-  transition: all 0.6s ease-out;
+	transition: all 0.6s ease-out;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.6s ease-out;
+	transition: all 0.6s ease-out;
 }
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform: translateY(100%);
-  /* opacity: 0; */
+	transform: translateY(100%);
+	/* opacity: 0; */
 }
 </style>

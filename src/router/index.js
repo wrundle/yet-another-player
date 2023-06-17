@@ -4,7 +4,6 @@ import LyricsView from '../views/LyricsView.vue';
 import SearchView from '../views/SearchView.vue';
 import MainView from '../views/MainView.vue';
 
-
 const routes = [
   {
     path: '/',

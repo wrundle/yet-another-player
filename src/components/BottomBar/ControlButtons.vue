@@ -1,7 +1,6 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 import { useStore } from 'vuex';
-import { ref } from "vue";
 
 const store = useStore();
 
@@ -13,7 +12,6 @@ const pauseBtnClick = () => {
 	window.songControls.togglePause();
 };
 </script>
-
 
 <template>
 	<div class="flex-auto flex flex-row place-content-center place-items-center text-3xl">
@@ -34,6 +32,7 @@ const pauseBtnClick = () => {
 
 		<Icon
 			v-if="store.state.currentSongState.isPlaying"
+
 			id="pause-button"
 			@click="pauseBtnClick"
 			class="mx-3 hover:scale-110 transition duration-200 text-4xl"
@@ -43,6 +42,7 @@ const pauseBtnClick = () => {
 
 		<Icon
 			v-else
+
 			id="play-button"
 			@click="playBtnClick"
 			class="mx-3 hover:scale-110 transition duration-200 text-4xl"
@@ -66,7 +66,3 @@ const pauseBtnClick = () => {
 
 	</div>
 </template>
-
-
-<style scoped>
-</style>

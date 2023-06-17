@@ -7,16 +7,15 @@ const { YMApi } = require('ym-api');
 const path = require('path');
 const fs = require('fs');
 
-
 import axios, {isCancel, AxiosError} from 'axios';
-
-
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 const YandexMusicApi = new YMApi();
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
 var howlerInstance = new Object();
 
+var APICallCount = 0;
 
 function toDataUrl(url, callback) {
 	var xhr = new XMLHttpRequest();
@@ -32,8 +31,6 @@ function toDataUrl(url, callback) {
 	xhr.send();
 };
 
-
-var APICallCount = 0;
 const getImgFromAPI = async (tags) => {
 	if (!(tags.album && tags.picture.length && tags.year) && (tags.artist.length && tags.title)) {
 		console.log(`Problem with "${tags.artist[0]}" by "${tags.title}"`);
@@ -76,14 +73,11 @@ const getImgFromAPI = async (tags) => {
 	};
 };
 
-
 const updateSongState = () => {
 	ipcRenderer.invoke('songStateHasBeenUpdated', [howlerInstance.state(), howlerInstance.playing()]);
 };
 
-
 contextBridge.exposeInMainWorld('folderHandling', {
-
 	addFolder: async () => {
 		const res = await ipcRenderer.invoke('selectFolder');
 		if (res.canceled) return;
@@ -148,12 +142,9 @@ contextBridge.exposeInMainWorld('folderHandling', {
 		};
 		resolve(songs);
 	}),
-
 });
 
-
 contextBridge.exposeInMainWorld('settings', {
-
 	readSettings: new Promise(async (resolve, reject) => {
 		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
 		const settings = jsonfile.readFileSync(pathToSettings);
@@ -187,12 +178,10 @@ contextBridge.exposeInMainWorld('settings', {
 		settings.searchOnTheInternet = param;
 		jsonfile.writeFileSync(pathToSettings, settings, {spaces: 4});
 	},
-
 });
 
 
 contextBridge.exposeInMainWorld('songControls', {
-
 	playSong: async (pathToFile) => {
 		const pathToSettings = await ipcRenderer.invoke('getPathToSettings');
 		const settings = jsonfile.readFileSync(pathToSettings);
@@ -216,9 +205,7 @@ contextBridge.exposeInMainWorld('songControls', {
 	songStateHasBeenUpdated: args => {
 		ipcRenderer.on('songStateHasBeenUpdated', args)
 	},
-
 });
-
 
 contextBridge.exposeInMainWorld('windowControls', {
 	minimize: () => ipcRenderer.invoke('minimize'),
@@ -226,7 +213,6 @@ contextBridge.exposeInMainWorld('windowControls', {
 	close: () => ipcRenderer.invoke('close'),
 	reload: () => ipcRenderer.invoke('reload')
 });
-
 
 // (async () => {
 // 	try {
